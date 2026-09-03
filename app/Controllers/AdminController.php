@@ -10,20 +10,24 @@ use App\Core\Controller;
 use App\Core\Csrf;
 use App\Core\Request;
 use App\Core\Response;
-use App\Core\Session;
 use App\Core\View;
+use App\Repositories\AdminContentRepository;
 use App\Repositories\AdminRepository;
+use App\Services\AdminContentService;
 use App\Services\AdminService;
+use InvalidArgumentException;
 
 final class AdminController extends Controller
 {
     private AdminService $service;
+    private AdminContentService $content;
     private array $sessionConfig;
     private array $authConfig;
 
     public function __construct(Application $app)
     {
         $this->service = new AdminService(new AdminRepository($app->database()));
+        $this->content = new AdminContentService(new AdminContentRepository($app->database()));
         $this->sessionConfig = (array) $app->config('session', []);
         $this->authConfig = (array) $app->config('auth', []);
     }
@@ -70,6 +74,153 @@ final class AdminController extends Controller
 
     public function dashboard(Request $request): string
     {
+        $user = $this->requireUser();
+
+        return View::adminLayout('admin/dashboard', [
+            'title' => 'Admin Dashboard',
+            'user' => $user,
+            'resources' => $this->content->resources(),
+            ...$this->service->dashboard(),
+        ]);
+    }
+
+    public function resources(Request $request): string
+    {
+        $user = $this->requireUser();
+
+        return View::adminLayout('admin/resources', [
+            'title' => 'Website Management',
+            'user' => $user,
+            'resources' => $this->content->resources(),
+        ]);
+    }
+
+    public function contentList(Request $request, string $resourceKey): string
+    {
+        $user = $this->requireUser();
+        $resource = $this->resourceOr404($resourceKey);
+        $listing = $this->content->list(
+            $resource,
+            max(1, (int) $request->query('page', 1)),
+            (string) $request->query('q', '')
+        );
+
+        return View::adminLayout('admin/content-list', [
+            'title' => $resource['label'],
+            'user' => $user,
+            'resources' => $this->content->resources(),
+            'resource' => $resource,
+            'listing' => $listing,
+            'message' => $request->query('message'),
+        ]);
+    }
+
+    public function contentCreate(Request $request, string $resourceKey): string
+    {
+        $user = $this->requireUser();
+        $resource = $this->resourceOr404($resourceKey);
+
+        return View::adminLayout('admin/content-form', [
+            'title' => 'Add ' . $resource['label'],
+            'user' => $user,
+            'resources' => $this->content->resources(),
+            'resource' => $resource,
+            'fields' => $this->content->fields($resource),
+            'record' => [],
+            'action' => '/admin/content/' . rawurlencode($resourceKey),
+            'submitLabel' => 'Create',
+        ]);
+    }
+
+    public function contentStore(Request $request, string $resourceKey): never
+    {
+        $user = $this->requireUser();
+        $resource = $this->resourceOr404($resourceKey);
+        $this->validateToken($request);
+
+        try {
+            $id = $this->content->create($resource, $request->all());
+            $this->service->audit((int) $user['id'], 'admin.content.created', [
+                'resource' => $resourceKey,
+                'id' => $id,
+            ]);
+            Response::redirect('/admin/content/' . rawurlencode($resourceKey) . '?message=created');
+        } catch (InvalidArgumentException $exception) {
+            Response::redirect('/admin/content/' . rawurlencode($resourceKey) . '/create?error=' . rawurlencode($exception->getMessage()));
+        }
+    }
+
+    public function contentEdit(Request $request, string $resourceKey, string $id): string
+    {
+        $user = $this->requireUser();
+        $resource = $this->resourceOr404($resourceKey);
+        $record = $this->content->find($resource, $this->id($id));
+
+        if ($record === null) {
+            $this->notFound();
+        }
+
+        return View::adminLayout('admin/content-form', [
+            'title' => 'Edit ' . $resource['label'],
+            'user' => $user,
+            'resources' => $this->content->resources(),
+            'resource' => $resource,
+            'fields' => $this->content->fields($resource),
+            'record' => $record,
+            'action' => '/admin/content/' . rawurlencode($resourceKey) . '/' . (int) $id,
+            'submitLabel' => 'Save changes',
+            'error' => $request->query('error'),
+        ]);
+    }
+
+    public function contentUpdate(Request $request, string $resourceKey, string $id): never
+    {
+        $user = $this->requireUser();
+        $resource = $this->resourceOr404($resourceKey);
+        $recordId = $this->id($id);
+        $this->validateToken($request);
+
+        try {
+            $this->content->update($resource, $recordId, $request->all());
+            $this->service->audit((int) $user['id'], 'admin.content.updated', [
+                'resource' => $resourceKey,
+                'id' => $recordId,
+            ]);
+            Response::redirect('/admin/content/' . rawurlencode($resourceKey) . '?message=updated');
+        } catch (InvalidArgumentException $exception) {
+            Response::redirect('/admin/content/' . rawurlencode($resourceKey) . '/' . $recordId . '/edit?error=' . rawurlencode($exception->getMessage()));
+        }
+    }
+
+    public function contentDelete(Request $request, string $resourceKey, string $id): never
+    {
+        $user = $this->requireUser();
+        $resource = $this->resourceOr404($resourceKey);
+        $recordId = $this->id($id);
+        $this->validateToken($request);
+
+        $this->content->delete($resource, $recordId);
+        $this->service->audit((int) $user['id'], 'admin.content.deleted', [
+            'resource' => $resourceKey,
+            'id' => $recordId,
+        ]);
+
+        Response::redirect('/admin/content/' . rawurlencode($resourceKey) . '?message=deleted');
+    }
+
+    public function logout(Request $request): never
+    {
+        $this->noIndex();
+        $this->validateToken($request);
+
+        $user = Auth::user($this->sessionConfig);
+        $this->service->auditLogout($user['id'] ?? null);
+        Auth::logout($this->sessionConfig);
+        Response::redirect('/admin/login');
+    }
+
+    private function requireUser(): array
+    {
         $this->noIndex();
         $user = Auth::user($this->sessionConfig);
 
@@ -77,26 +228,43 @@ final class AdminController extends Controller
             Response::redirect('/admin/login');
         }
 
-        return View::adminLayout('admin/dashboard', [
-            'title' => 'Admin Dashboard',
-            'user' => $user,
-            ...$this->service->dashboard(),
-        ]);
+        return $user;
     }
 
-    public function logout(Request $request): never
+    private function resourceOr404(string $key): array
     {
-        $this->noIndex();
+        $resource = $this->content->resource($key);
 
+        if ($resource === null) {
+            $this->notFound();
+        }
+
+        return $resource;
+    }
+
+    private function validateToken(Request $request): void
+    {
         if (!Csrf::validate((string) $request->input('_token'))) {
             Response::status(419);
             exit('Invalid request token.');
         }
+    }
 
-        $user = Auth::user($this->sessionConfig);
-        $this->service->auditLogout($user['id'] ?? null);
-        Auth::logout($this->sessionConfig);
-        Response::redirect('/admin/login');
+    private function id(string $value): int
+    {
+        $id = (int) $value;
+
+        if ($id < 1 || (string) $id !== ltrim($value, '0')) {
+            $this->notFound();
+        }
+
+        return $id;
+    }
+
+    private function notFound(): never
+    {
+        Response::status(404);
+        exit('Not Found');
     }
 
     private function noIndex(): void
