@@ -30,7 +30,7 @@ $resources = $resources ?? [];
     <aside class="admin-sidebar" aria-label="Administration navigation">
         <div class="admin-sidebar__label">Workspace</div>
         <a class="admin-nav-link<?= $adminPath === '/admin' ? ' is-active' : '' ?>" href="/admin">Overview</a>
-        <a class="admin-nav-link<?= str_starts_with($adminPath, '/admin/manage') || str_starts_with($adminPath, '/admin/homepage') || str_starts_with($adminPath, '/admin/media') || str_starts_with($adminPath, '/admin/content/') ? ' is-active' : '' ?>" href="/admin/manage">Website management</a>
+        <a class="admin-nav-link<?= str_starts_with($adminPath, '/admin/manage') || str_starts_with($adminPath, '/admin/homepage') || str_starts_with($adminPath, '/admin/media') || str_starts_with($adminPath, '/admin/content/') || str_starts_with($adminPath, '/admin/practice-areas/') ? ' is-active' : '' ?>" href="/admin/manage">Website management</a>
     </aside>
     <main class="admin-main"><?= $content ?></main>
 </div>
