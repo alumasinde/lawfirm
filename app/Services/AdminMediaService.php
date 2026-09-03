@@ -138,7 +138,7 @@ final class AdminMediaService
     {
         $name = trim(basename(str_replace('\\', '/', $name)));
 
-        return $name !== '' ? mb_substr($name, 0, 255) : 'image';
+        return $name !== '' ? substr($name, 0, 255) : 'image';
     }
 
     private function uploadError(int $error): string
