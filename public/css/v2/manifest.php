@@ -7,4 +7,5 @@ return [
     'homepage.css',
     'public-pages.css',
     'practice-area-detail.css',
+    'practice-editor.css',
 ];
