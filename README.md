@@ -14,10 +14,13 @@ A custom PHP and MySQL website and content management system for a Kenyan law fi
 2. Create the database configured in `.env`.
 3. Run migrations:
 
-   `php migrate.php`
+   `php database/migrate.php`
 
 4. Point your web server document root to `public/`.
 5. Run `php -S localhost:8000 -t public` for local development.
+php -S 0.0.0.0:8000 -t public public/index.php
+
+lawfirm.test:8000 & lawfirm.test:8000/admin/loin
 
 ## Database migrations
 
