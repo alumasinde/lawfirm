@@ -16,7 +16,7 @@ final class AdminContentRepository
     public function resources(): array
     {
         return $this->database->statement(
-            'SELECT resource_key, label, description, table_name, list_columns_json, sort_order
+            'SELECT resource_key, label, description, table_name, list_columns_json, field_config_json, sort_order
              FROM admin_resources
              WHERE is_enabled = 1
              ORDER BY sort_order ASC, id ASC'
@@ -26,7 +26,7 @@ final class AdminContentRepository
     public function resource(string $key): ?array
     {
         $row = $this->database->statement(
-            'SELECT resource_key, label, description, table_name, list_columns_json
+            'SELECT resource_key, label, description, table_name, list_columns_json, field_config_json
              FROM admin_resources
              WHERE resource_key = :resource_key AND is_enabled = 1
              LIMIT 1',
