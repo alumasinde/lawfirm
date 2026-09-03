@@ -1,0 +1,164 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Repositories\AdminContentRepository;
+use InvalidArgumentException;
+
+final class AdminContentService
+{
+    public function __construct(private readonly AdminContentRepository $repository)
+    {
+    }
+
+    public function resources(): array
+    {
+        return array_map(function (array $resource): array {
+            $resource['list_columns'] = $this->decodeColumns($resource['list_columns_json'] ?? '[]');
+
+            return $resource;
+        }, $this->repository->resources());
+    }
+
+    public function resource(string $key): ?array
+    {
+        $resource = $this->repository->resource($key);
+
+        if ($resource === null) {
+            return null;
+        }
+
+        $resource['list_columns'] = $this->decodeColumns($resource['list_columns_json'] ?? '[]');
+
+        return $resource;
+    }
+
+    public function list(array $resource, int $page, string $search): array
+    {
+        $result = $this->repository->paginate($resource, max(1, $page), 20, trim($search));
+
+        return [
+            ...$result,
+            'page' => max(1, $page),
+            'per_page' => 20,
+            'pages' => max(1, (int) ceil($result['total'] / 20)),
+            'search' => trim($search),
+        ];
+    }
+
+    public function fields(array $resource): array
+    {
+        return array_values(array_filter(
+            $this->repository->columns($resource),
+            static fn (array $column): bool => !in_array($column['Field'], ['id', 'created_at', 'updated_at'], true)
+        ));
+    }
+
+    public function find(array $resource, int $id): ?array
+    {
+        return $this->repository->find($resource, $id);
+    }
+
+    public function create(array $resource, array $input): int
+    {
+        $data = $this->payload($resource, $input);
+
+        return $this->repository->insert($resource, $data);
+    }
+
+    public function update(array $resource, int $id, array $input): void
+    {
+        $this->repository->update($resource, $id, $this->payload($resource, $input));
+    }
+
+    public function delete(array $resource, int $id): void
+    {
+        $this->repository->delete($resource, $id);
+    }
+
+    private function payload(array $resource, array $input): array
+    {
+        $fields = $this->fields($resource);
+        $data = [];
+
+        foreach ($fields as $field) {
+            $name = (string) $field['Field'];
+            $type = strtolower((string) $field['Type']);
+            $nullable = (string) $field['Null'] === 'YES';
+            $value = $input[$name] ?? null;
+
+            if ($this->isBoolean($type)) {
+                $data[$name] = isset($input[$name]) ? 1 : 0;
+                continue;
+            }
+
+            if (is_string($value)) {
+                $value = trim($value);
+            }
+
+            if ($value === '' && $nullable) {
+                $data[$name] = null;
+                continue;
+            }
+
+            if ($value === '' && !$nullable && str_contains($type, 'text')) {
+                $data[$name] = '';
+                continue;
+            }
+
+            if ($value === '' && !$nullable) {
+                throw new InvalidArgumentException($this->label($name) . ' is required.');
+            }
+
+            if ($value === null) {
+                continue;
+            }
+
+            if (preg_match('/int|decimal|float|double/', $type) === 1 && !is_numeric($value)) {
+                throw new InvalidArgumentException($this->label($name) . ' must be a valid number.');
+            }
+
+            if ($name === 'slug' && $value === '') {
+                $value = $this->slugify((string) ($input['name'] ?? $input['title'] ?? ''));
+            }
+
+            $data[$name] = $value;
+        }
+
+        if (array_key_exists('slug', $data) && $data['slug'] === '') {
+            $data['slug'] = $this->slugify((string) ($input['name'] ?? $input['title'] ?? ''));
+        }
+
+        return $data;
+    }
+
+    private function decodeColumns(string $json): array
+    {
+        try {
+            $columns = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            return [];
+        }
+
+        return is_array($columns) ? array_values(array_filter($columns, 'is_string')) : [];
+    }
+
+    private function isBoolean(string $type): bool
+    {
+        return preg_match('/tinyint\(1\)|boolean|bool/', $type) === 1;
+    }
+
+    private function label(string $field): string
+    {
+        return ucwords(str_replace('_', ' ', $field));
+    }
+
+    private function slugify(string $value): string
+    {
+        $value = strtolower(trim($value));
+        $value = preg_replace('/[^a-z0-9]+/', '-', $value) ?? '';
+        return trim($value, '-');
+    }
+}
