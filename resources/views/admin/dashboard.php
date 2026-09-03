@@ -39,7 +39,6 @@
                 <span>Open the full content workspace for practice areas, advocates, insights and more.</span>
             </a>
         </div>
-        </div>
     </section>
 
     <section class="admin-panel">
