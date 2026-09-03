@@ -14,6 +14,7 @@ use App\Core\View;
 use App\Repositories\AdminContentRepository;
 use App\Repositories\AdminRepository;
 use App\Repositories\AdminMediaRepository;
+use App\Repositories\AdminHomepageRepository;
 use App\Services\AdminContentService;
 use App\Services\AdminMediaService;
 use App\Services\AdminService;
@@ -24,6 +25,7 @@ final class AdminController extends Controller
     private AdminService $service;
     private AdminContentService $content;
     private AdminMediaService $media;
+    private AdminHomepageRepository $homepage;
     private array $sessionConfig;
     private array $authConfig;
 
@@ -31,6 +33,7 @@ final class AdminController extends Controller
     {
         $this->service = new AdminService(new AdminRepository($app->database()));
         $this->content = new AdminContentService(new AdminContentRepository($app->database()));
+        $this->homepage = new AdminHomepageRepository($app->database());
         $this->media = new AdminMediaService(
             new AdminMediaRepository($app->database()),
             max(1, (int) $app->config('media.max_upload_bytes', 10485760))
@@ -218,6 +221,86 @@ final class AdminController extends Controller
         Response::redirect('/admin/content/' . rawurlencode($resourceKey) . '?message=deleted');
     }
 
+    public function homepage(Request $request): string
+    {
+        $user = $this->requireUser();
+
+        return View::adminLayout('admin/homepage', [
+            'title' => 'Homepage Builder',
+            'user' => $user,
+            'resources' => $this->content->resources(),
+            'sections' => $this->homepage->sections(),
+            'slides' => $this->homepage->slides(),
+            'mediaOptions' => $this->media->options(),
+            'nextSortOrder' => $this->homepage->nextSortOrder(),
+            'message' => $request->query('message'),
+            'error' => $request->query('error'),
+        ]);
+    }
+
+    public function homepageSectionUpdate(Request $request, string $id): never
+    {
+        $user = $this->requireUser();
+        $this->validateToken($request);
+        $sectionId = $this->id($id);
+
+        try {
+            $this->homepage->updateSection($sectionId, [
+                'title' => $this->nullable($request->input('title')),
+                'eyebrow' => $this->nullable($request->input('eyebrow')),
+                'body' => $this->nullable($request->input('body')),
+                'primary_label' => $this->nullable($request->input('primary_label')),
+                'primary_url' => $this->nullable($request->input('primary_url')),
+                'secondary_label' => $this->nullable($request->input('secondary_label')),
+                'secondary_url' => $this->nullable($request->input('secondary_url')),
+                'is_enabled' => $request->input('is_enabled') === '1' ? 1 : 0,
+            ]);
+            $this->service->audit((int) $user['id'], 'admin.homepage.section.updated', ['id' => $sectionId]);
+            Response::redirect('/admin/homepage?message=section');
+        } catch (InvalidArgumentException $exception) {
+            Response::redirect('/admin/homepage?error=' . rawurlencode($exception->getMessage()));
+        }
+    }
+
+    public function homepageSlideStore(Request $request): never
+    {
+        $user = $this->requireUser();
+        $this->validateToken($request);
+
+        try {
+            $id = $this->homepage->createSlide($this->slideData($request, $this->homepage->nextSortOrder()));
+            $this->service->audit((int) $user['id'], 'admin.homepage.slide.created', ['id' => $id]);
+            Response::redirect('/admin/homepage?message=slide');
+        } catch (InvalidArgumentException $exception) {
+            Response::redirect('/admin/homepage?error=' . rawurlencode($exception->getMessage()));
+        }
+    }
+
+    public function homepageSlideUpdate(Request $request, string $id): never
+    {
+        $user = $this->requireUser();
+        $this->validateToken($request);
+        $slideId = $this->id($id);
+
+        try {
+            $this->homepage->updateSlide($slideId, $this->slideData($request, 0));
+            $this->service->audit((int) $user['id'], 'admin.homepage.slide.updated', ['id' => $slideId]);
+            Response::redirect('/admin/homepage?message=slide');
+        } catch (InvalidArgumentException $exception) {
+            Response::redirect('/admin/homepage?error=' . rawurlencode($exception->getMessage()));
+        }
+    }
+
+    public function homepageSlideDelete(Request $request, string $id): never
+    {
+        $user = $this->requireUser();
+        $this->validateToken($request);
+        $slideId = $this->id($id);
+        $this->homepage->deleteSlide($slideId);
+        $this->service->audit((int) $user['id'], 'admin.homepage.slide.deleted', ['id' => $slideId]);
+        Response::redirect('/admin/homepage?message=slide');
+    }
+
     public function media(Request $request): string
     {
         $user = $this->requireUser();
@@ -279,6 +362,59 @@ final class AdminController extends Controller
         $this->service->auditLogout($user['id'] ?? null);
         Auth::logout($this->sessionConfig);
         Response::redirect('/admin/login');
+    }
+
+    private function slideData(Request $request, int $defaultSortOrder): array
+    {
+        $title = trim((string) $request->input('title'));
+
+        if ($title === '') {
+            throw new InvalidArgumentException('Slide title is required.');
+        }
+
+        $opacity = (float) $request->input('overlay_opacity', '0.55');
+
+        if ($opacity < 0 || $opacity > 1) {
+            throw new InvalidArgumentException('Overlay opacity must be between 0 and 1.');
+        }
+
+        return [
+            'title' => $title,
+            'body' => $this->nullable($request->input('body')),
+            'media_id' => $this->nullableInt($request->input('media_id')),
+            'mobile_media_id' => $this->nullableInt($request->input('mobile_media_id')),
+            'primary_label' => $this->nullable($request->input('primary_label')),
+            'primary_url' => $this->nullable($request->input('primary_url')),
+            'secondary_label' => $this->nullable($request->input('secondary_label')),
+            'secondary_url' => $this->nullable($request->input('secondary_url')),
+            'overlay_opacity' => $opacity,
+            'is_enabled' => $request->input('is_enabled') === '1' ? 1 : 0,
+            'sort_order' => max(0, (int) $request->input('sort_order', $defaultSortOrder)),
+        ];
+    }
+
+    private function nullable(mixed $value): ?string
+    {
+        $value = trim((string) $value);
+
+        return $value === '' ? null : $value;
+    }
+
+    private function nullableInt(mixed $value): ?int
+    {
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        $id = (int) $value;
+
+        if ($id < 1) {
+            throw new InvalidArgumentException('Select a valid media item.');
+        }
+
+        return $id;
     }
 
     private function requireUser(): array
