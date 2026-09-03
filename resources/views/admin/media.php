@@ -58,6 +58,11 @@
                             <strong title="<?= htmlspecialchars($media['filename'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($media['filename'], ENT_QUOTES, 'UTF-8') ?></strong>
                             <span><?= htmlspecialchars($media['mime_type'], ENT_QUOTES, 'UTF-8') ?> · <?= number_format(((int) $media['size_bytes']) / 1024, 1) ?> KB</span>
                             <?php if (!empty($media['alt_text'])): ?><small><?= htmlspecialchars($media['alt_text'], ENT_QUOTES, 'UTF-8') ?></small><?php endif; ?>
+                            <?php if ((int) ($media['usage_count'] ?? 0) > 0): ?>
+                                <small>In use <?= (int) $media['usage_count'] ?> time(s)</small>
+                            <?php else: ?>
+                                <small>Not currently in use</small>
+                            <?php endif; ?>
                             <form method="post" action="/admin/media/<?= (int) $media['id'] ?>/delete" onsubmit="return confirm('Delete this image? Images that are in use cannot be deleted.');">
                                 <input type="hidden" name="_token" value="<?= htmlspecialchars(AppCoreCsrf::token(), ENT_QUOTES, 'UTF-8') ?>">
                                 <button type="submit">Delete</button>
