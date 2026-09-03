@@ -17,6 +17,7 @@ $firmDescription = $identity['body'] ?? '';
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#102A43">
+<meta name="description" content="<?= htmlspecialchars($metaDescription ?? $firmDescription, ENT_QUOTES, 'UTF-8') ?>">
 <title><?= htmlspecialchars($title ?? $firmName, ENT_QUOTES, 'UTF-8') ?></title>
 <?= $styleLinker ?>
 </head>
