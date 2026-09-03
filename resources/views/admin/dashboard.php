@@ -26,6 +26,10 @@
             <a class="admin-view-site" href="/admin/manage">Open management</a>
         </div>
         <div class="admin-quick-actions">
+            <a href="/admin/media">
+                <strong>Media Library</strong>
+                <span>Upload and reuse images across website content.</span>
+            </a>
             <?php foreach ($resources as $resource): ?>
                 <a href="/admin/content/<?= rawurlencode($resource['resource_key']) ?>">
                     <strong><?= htmlspecialchars($resource['label'], ENT_QUOTES, 'UTF-8') ?></strong>
