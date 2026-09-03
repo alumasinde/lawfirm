@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repositories\AdminContentRepository;
+use App\Support\HtmlSanitizer;
 use InvalidArgumentException;
 
 final class AdminContentService
