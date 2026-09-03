@@ -62,7 +62,11 @@ final class HomepageRepository
             'SELECT a.*, m.path AS cover_path
              FROM articles a
              LEFT JOIN media m ON m.id = a.cover_media_id
-             WHERE a.is_enabled = 1 AND a.is_featured = 1 AND a.published_at IS NOT NULL
+             WHERE a.is_enabled = 1
+               AND a.is_featured = 1
+               AND a.status = "published"
+               AND a.published_at IS NOT NULL
+               AND a.published_at <= NOW()
              ORDER BY a.published_at DESC, a.id DESC
              LIMIT ' . max(1, $limit)
         )->fetchAll();
