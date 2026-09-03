@@ -17,7 +17,7 @@
                 <label>Phone<input name="phone" maxlength="50" autocomplete="tel"></label>
                 <label>Subject<input name="subject" maxlength="255"></label>
                 <label>Message<textarea name="message" required rows="7"></textarea></label>
-                <button class="button button--primary" type="submit">Send Enquiry <span aria-hidden="true">→</span></button>
+                <button class="button button--primary" type="submit">Send Enquiry</button>
             </form>
         </div>
         <aside class="contact-panel">
