@@ -16,6 +16,11 @@ final class HtmlSanitizer
         'blockquote', 'a', 'hr',
     ];
 
+    private const DROP_WITH_CONTENT = [
+        'script', 'style', 'iframe', 'object', 'embed',
+        'svg', 'canvas', 'form', 'input', 'button',
+    ];
+
     public static function sanitize(string $html): string
     {
         $html = trim($html);
@@ -62,22 +67,33 @@ final class HtmlSanitizer
                 continue;
             }
 
-            if ($child instanceof DOMElement) {
-                $tag = strtolower($child->tagName);
-
-                if (!in_array($tag, self::ALLOWED_TAGS, true)) {
-                    self::unwrap($child);
-                    continue;
-                }
-
-                self::cleanAttributes($child, $tag);
-                self::cleanChildren($child);
+            if (!$child instanceof DOMElement) {
+                continue;
             }
+
+            $tag = strtolower($child->tagName);
+
+            if (in_array($tag, self::DROP_WITH_CONTENT, true)) {
+                $node->removeChild($child);
+                continue;
+            }
+
+            if (!in_array($tag, self::ALLOWED_TAGS, true)) {
+                self::cleanChildren($child);
+                self::unwrap($child);
+                continue;
+            }
+
+            self::cleanAttributes($child, $tag);
+            self::cleanChildren($child);
         }
     }
 
     private static function cleanAttributes(DOMElement $element, string $tag): void
     {
+        $href = $tag === 'a' ? trim((string) $element->getAttribute('href')) : '';
+        $target = $tag === 'a' ? (string) $element->getAttribute('target') : '';
+
         foreach (iterator_to_array($element->attributes) as $attribute) {
             $element->removeAttribute($attribute->name);
         }
@@ -86,13 +102,11 @@ final class HtmlSanitizer
             return;
         }
 
-        $href = trim((string) $element->getAttribute('href'));
-
-        if ($href !== '' && preg_match('#^(https?://|mailto:|tel:|/|#)#i', $href) === 1) {
+        if ($href !== '' && preg_match('#^(https?://|mailto:|tel:|/|\\#)#i', $href) === 1) {
             $element->setAttribute('href', $href);
         }
 
-        if ($element->hasAttribute('target') && $element->getAttribute('target') === '_blank') {
+        if ($target === '_blank') {
             $element->setAttribute('target', '_blank');
             $element->setAttribute('rel', 'noopener noreferrer');
         }
