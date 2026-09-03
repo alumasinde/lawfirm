@@ -5,8 +5,18 @@
             <h1><?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?></h1>
             <p><?= htmlspecialchars((string) ($resource['description'] ?? ''), ENT_QUOTES, 'UTF-8') ?></p>
         </div>
-        <a class="admin-view-site" href="/admin/content/<?= rawurlencode($resource['resource_key']) ?>">Back to list</a>
+        <a class="admin-view-site admin-button-with-icon" href="/admin/content/<?= rawurlencode($resource['resource_key']) ?>">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6M8 12h12"/></svg>
+            <span>Back to list</span>
+        </a>
     </div>
+
+    <?php if (!empty($message)): ?>
+        <div class="admin-notice admin-notice--success" role="status">
+            <span class="admin-notice__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12 4.2 4.2L19 6.5"/></svg></span>
+            <span>Your changes were saved successfully.</span>
+        </div>
+    <?php endif; ?>
 
     <?php if (!empty($error)): ?>
         <div class="admin-alert" role="alert"><?= htmlspecialchars((string) $error, ENT_QUOTES, 'UTF-8') ?></div>
@@ -116,8 +126,14 @@
         </div>
 
         <div class="admin-editor__actions">
-            <a href="/admin/content/<?= rawurlencode($resource['resource_key']) ?>">Cancel</a>
-            <button type="submit"><?= htmlspecialchars($submitLabel, ENT_QUOTES, 'UTF-8') ?></button>
+            <a class="admin-action-button admin-action-button--secondary" href="/admin/content/<?= rawurlencode($resource['resource_key']) ?>">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                <span>Cancel</span>
+            </a>
+            <button class="admin-action-button admin-action-button--primary" type="submit">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5V4Zm3 0v6h8V4m-7 16v-6h6v6"/></svg>
+                <span><?= htmlspecialchars($submitLabel, ENT_QUOTES, 'UTF-8') ?></span>
+            </button>
         </div>
     </form>
 </section>
