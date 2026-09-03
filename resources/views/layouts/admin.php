@@ -10,8 +10,7 @@ $resources = $resources ?? [];
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow,noarchive">
 <title><?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?></title>
-<link rel="stylesheet" href="/css/admin.css">
-<link rel="stylesheet" href="/css/v2/rich-editor.css">
+<link rel="stylesheet" href="/css/admin.css?v=20260903-2">
 </head>
 <body class="admin-shell">
 <?php if ($user !== null): ?>
