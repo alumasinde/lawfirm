@@ -31,7 +31,6 @@ $resources = $resources ?? [];
         <div class="admin-sidebar__label">Workspace</div>
         <a class="admin-nav-link<?= $adminPath === '/admin' ? ' is-active' : '' ?>" href="/admin">Overview</a>
         <a class="admin-nav-link<?= str_starts_with($adminPath, '/admin/manage') || str_starts_with($adminPath, '/admin/homepage') || str_starts_with($adminPath, '/admin/media') || str_starts_with($adminPath, '/admin/content/') ? ' is-active' : '' ?>" href="/admin/manage">Website management</a>
-        <p class="admin-sidebar__hint">Use Website management to access homepage, media and all content areas without duplicating them in the main navigation.</p>
     </aside>
     <main class="admin-main"><?= $content ?></main>
 </div>
