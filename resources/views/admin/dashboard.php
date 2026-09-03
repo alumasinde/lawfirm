@@ -25,21 +25,20 @@
             </div>
             <a class="admin-view-site" href="/admin/manage">Open management</a>
         </div>
-        <div class="admin-quick-actions">
+        <div class="admin-quick-actions admin-quick-actions--focused">
             <a href="/admin/homepage">
                 <strong>Homepage Builder</strong>
-                <span>Manage homepage sections and hero slides in one place.</span>
+                <span>Update homepage sections and hero slides from one focused workspace.</span>
             </a>
             <a href="/admin/media">
                 <strong>Media Library</strong>
-                <span>Upload and reuse images across website content.</span>
+                <span>Upload and reuse images across the website.</span>
             </a>
-            <?php foreach ($resources as $resource): ?>
-                <a href="/admin/content/<?= rawurlencode($resource['resource_key']) ?>">
-                    <strong><?= htmlspecialchars($resource['label'], ENT_QUOTES, 'UTF-8') ?></strong>
-                    <span><?= htmlspecialchars((string) ($resource['description'] ?? ''), ENT_QUOTES, 'UTF-8') ?></span>
-                </a>
-            <?php endforeach; ?>
+            <a href="/admin/manage">
+                <strong>All website content</strong>
+                <span>Open the full content workspace for practice areas, advocates, insights and more.</span>
+            </a>
+        </div>
         </div>
     </section>
 
