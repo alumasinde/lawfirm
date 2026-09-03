@@ -58,9 +58,9 @@ return function (\PDO $pdo): void {
     }
 
     $articles = [
-        ['Understanding your legal options before taking action', 'understanding-your-legal-options', 'A practical starting point when evaluating an important legal matter.', 'A legal issue often involves choices that benefit from early professional advice and careful preparation.', 1, 1, 1],
-        ['Why clear agreements matter in business relationships', 'why-clear-agreements-matter', 'Clear legal agreements help define expectations and reduce avoidable disputes.', 'Well-prepared agreements create a stronger foundation for commercial relationships.', 1, 1, 1],
-        ['Preparing for an effective legal consultation', 'preparing-for-an-effective-legal-consultation', 'A few simple preparations can help make an initial consultation more productive.', 'Bringing relevant information and questions helps establish a clearer understanding of the matter.', 1, 1, 1]
+        ['Understanding your legal options before taking action', 'understanding-your-legal-options', 'A practical starting point when evaluating an important legal matter.', 'A legal issue often involves choices that benefit from early professional advice and careful preparation.', 1, 1],
+        ['Why clear agreements matter in business relationships', 'why-clear-agreements-matter', 'Clear legal agreements help define expectations and reduce avoidable disputes.', 'Well-prepared agreements create a stronger foundation for commercial relationships.', 1, 1],
+        ['Preparing for an effective legal consultation', 'preparing-for-an-effective-legal-consultation', 'A few simple preparations can help make an initial consultation more productive.', 'Bringing relevant information and questions helps establish a clearer understanding of the matter.', 1, 1]
     ];
 
     $statement = $pdo->prepare('INSERT INTO articles (title, slug, excerpt, body, published_at, is_featured, is_enabled)
