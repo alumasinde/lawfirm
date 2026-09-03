@@ -17,4 +17,13 @@ return [
         'username' => Config::env('DB_USERNAME', ''),
         'password' => Config::env('DB_PASSWORD', ''),
     ],
+    'session' => [
+        'name' => Config::env('SESSION_NAME', 'lawfirm_session'),
+        'secure' => filter_var(Config::env('SESSION_SECURE', false), FILTER_VALIDATE_BOOL),
+        'same_site' => Config::env('SESSION_SAME_SITE', 'Lax'),
+    ],
+    'auth' => [
+        'max_attempts' => (int) Config::env('AUTH_MAX_ATTEMPTS', 5),
+        'window_minutes' => (int) Config::env('AUTH_WINDOW_MINUTES', 15),
+    ],
 ];

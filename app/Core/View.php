@@ -37,4 +37,17 @@ final class View
 
         return (string) ob_get_clean();
     }
+
+    public static function adminLayout(string $view, array $data = []): string
+    {
+        $content = self::render($view, $data);
+        $title = $data['title'] ?? 'Administrator';
+
+        extract($data, EXTR_SKIP);
+
+        ob_start();
+        require BASE_PATH . '/resources/views/layouts/admin.php';
+
+        return (string) ob_get_clean();
+    }
 }

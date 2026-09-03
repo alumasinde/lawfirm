@@ -6,6 +6,15 @@ $app = require dirname(__DIR__) . '/app/bootstrap.php';
 
 require BASE_PATH . '/routes/web.php';
 
+$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+if (str_starts_with($path, '/admin')) {
+    header('X-Robots-Tag: noindex, nofollow, noarchive', true);
+}
+
+header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('X-Frame-Options: SAMEORIGIN');
+
 try {
     $response = $app->router()->dispatch(new App\Core\Request(), $app);
 

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Controllers\AdminController;
 use App\Controllers\HomeController;
 use App\Controllers\PublicController;
 
@@ -22,3 +23,8 @@ $app->router()->get('/faq', [PublicController::class, 'faq']);
 
 $app->router()->get('/contact', [PublicController::class, 'contact']);
 $app->router()->post('/contact', [PublicController::class, 'submitContact']);
+
+$app->router()->get('/admin/login', [AdminController::class, 'login']);
+$app->router()->post('/admin/login', [AdminController::class, 'authenticate']);
+$app->router()->get('/admin', [AdminController::class, 'dashboard']);
+$app->router()->post('/admin/logout', [AdminController::class, 'logout']);
