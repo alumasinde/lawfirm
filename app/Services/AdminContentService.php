@@ -103,6 +103,14 @@ final class AdminContentService
                 $value = trim($value);
             }
 
+            $fieldConfig = is_array($resource['field_config'][$name] ?? null)
+                ? $resource['field_config'][$name]
+                : [];
+
+            if (($fieldConfig['type'] ?? '') === 'richtext' && is_string($value)) {
+                $value = HtmlSanitizer::sanitize($value);
+            }
+
             if ($value === '' && $nullable) {
                 $data[$name] = null;
                 continue;
