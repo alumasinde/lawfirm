@@ -132,7 +132,25 @@
 
             if (!canvas || !source) return;
 
-            canvas.innerHTML = source.value || '';
+            const initialValue = source.value || '';
+            const hasHtml = /<\/?[a-z][\s\S]*>/i.test(initialValue);
+
+            if (initialValue.trim() !== '' && !hasHtml) {
+                canvas.innerHTML = initialValue
+                    .trim()
+                    .split(/\n\s*\n/)
+                    .map(function (paragraph) {
+                        return '<p>' + paragraph
+                            .replace(/&/g, '&amp;')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;')
+                            .replace(/\n/g, '<br>') + '</p>';
+                    })
+                    .join('');
+            } else {
+                canvas.innerHTML = initialValue;
+            }
+
             editor.classList.add('is-enhanced');
 
             const sync = function () {
@@ -156,6 +174,8 @@
 
                     if (button.dataset.block) {
                         document.execCommand('formatBlock', false, '<' + button.dataset.block + '>');
+                    } else if (button.dataset.command === 'formatBlock') {
+                        document.execCommand('formatBlock', false, '<' + (button.dataset.value || 'p') + '>');
                     } else if (button.dataset.command === 'createLink') {
                         const url = window.prompt('Enter the link URL');
                         if (url) {
