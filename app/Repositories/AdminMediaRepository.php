@@ -66,6 +66,7 @@ final class AdminMediaRepository
 
     public function usages(int $id): array
     {
+        try {
         $references = $this->database->statement(
             'SELECT TABLE_NAME, COLUMN_NAME
              FROM information_schema.KEY_COLUMN_USAGE
@@ -94,6 +95,9 @@ final class AdminMediaRepository
         }
 
         return $usage;
+        } catch (\Throwable) {
+            return [];
+        }
     }
 
     public function delete(int $id): void
