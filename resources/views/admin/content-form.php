@@ -25,10 +25,21 @@
                 $isBoolean = preg_match('/tinyint\(1\)|boolean|bool/', $type) === 1;
                 $isText = preg_match('/text|json/', $type) === 1;
                 $isDateTime = str_contains($type, 'datetime') || str_contains($type, 'timestamp');
+                $isMedia = str_ends_with($name, '_media_id');
                 ?>
                 <label class="<?= $isText ? 'admin-field admin-field--wide' : 'admin-field' ?>">
                     <span><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></span>
-                    <?php if ($isBoolean): ?>
+                    <?php if ($isMedia): ?>
+                        <select name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>">
+                            <option value="">No image selected</option>
+                            <?php foreach (($mediaOptions ?? []) as $media): ?>
+                                <option value="<?= (int) $media['id'] ?>" <?= (string) $value === (string) $media['id'] ? 'selected' : '' ?>>
+                                    #<?= (int) $media['id'] ?> — <?= htmlspecialchars($media['filename'], ENT_QUOTES, 'UTF-8') ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <a class="admin-field__media-link" href="/admin/media" target="_blank" rel="noopener">Open Media Library</a>
+                    <?php elseif ($isBoolean): ?>
                         <input type="hidden" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" value="0">
                         <input type="checkbox" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" value="1" <?= (int) $value === 1 ? 'checked' : '' ?>>
                     <?php elseif ($isText): ?>
