@@ -23,7 +23,7 @@
                         <span><?= (int) $section['is_enabled'] === 1 ? 'Live' : 'Hidden' ?></span>
                     </summary>
                     <form class="admin-content-form" method="post" action="/admin/homepage/sections/<?= (int) $section['id'] ?>">
-                        <input type="hidden" name="_token" value="<?= htmlspecialchars(AppCoreCsrf::token(), ENT_QUOTES, 'UTF-8') ?>">
+                        <input type="hidden" name="_token" value="<?= htmlspecialchars(\App\Core\Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
                         <label class="admin-field"><span>Eyebrow</span><input name="eyebrow" value="<?= htmlspecialchars((string) $section['eyebrow'], ENT_QUOTES, 'UTF-8') ?>"></label>
                         <label class="admin-field"><span>Title</span><input name="title" value="<?= htmlspecialchars((string) $section['title'], ENT_QUOTES, 'UTF-8') ?>"></label>
                         <label class="admin-field admin-field--wide"><span>Description</span><textarea name="body" rows="5"><?= htmlspecialchars((string) $section['body'], ENT_QUOTES, 'UTF-8') ?></textarea></label>
@@ -59,7 +59,7 @@
                         </div>
                     </form>
                     <form method="post" action="/admin/homepage/slides/<?= (int) $slide['id'] ?>/delete" class="admin-danger-form" onsubmit="return confirm('Delete this slide?');">
-                        <input type="hidden" name="_token" value="<?= htmlspecialchars(AppCoreCsrf::token(), ENT_QUOTES, 'UTF-8') ?>">
+                        <input type="hidden" name="_token" value="<?= htmlspecialchars(\App\Core\Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
                         <button type="submit">Delete slide</button>
                     </form>
                 </details>
