@@ -6,4 +6,5 @@ return [
     'components.css',
     'homepage.css',
     'public-pages.css',
+    'practice-area-detail.css',
 ];

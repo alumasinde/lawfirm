@@ -31,9 +31,11 @@
                 $options = is_array($fieldConfig['options'] ?? null) ? $fieldConfig['options'] : [];
                 $placeholder = (string) ($fieldConfig['placeholder'] ?? '');
                 $maxLength = isset($fieldConfig['maxlength']) ? (int) $fieldConfig['maxlength'] : 500;
+                $contentHint = (string) ($fieldConfig['hint'] ?? '');
                 ?>
                 <label class="<?= ($isText || $configuredType === 'textarea') ? 'admin-field admin-field--wide' : 'admin-field' ?>">
                     <span><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></span>
+                    <?php if ($contentHint !== ''): ?><small class="admin-field__hint"><?= htmlspecialchars($contentHint, ENT_QUOTES, 'UTF-8') ?></small><?php endif; ?>
                     <?php if ($configuredType === 'select' && $options !== []): ?>
                         <select name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>">
                             <?php foreach ($options as $optionValue => $optionLabel): ?>
@@ -51,10 +53,10 @@
                         </select>
                         <a class="admin-field__media-link" href="/admin/media" target="_blank" rel="noopener">Open Media Library</a>
                     <?php elseif ($isBoolean): ?>
-                        <input type="hidden" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" value="0">
-                        <input type="checkbox" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" value="1" <?= (int) $value === 1 ? 'checked' : '' ?>>
+                        <span class="admin-toggle"><input type="hidden" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" value="0"><input type="checkbox" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" value="1" <?= (int) $value === 1 ? 'checked' : '' ?>><strong>Enabled</strong></span>
                     <?php elseif ($isText || $configuredType === 'textarea'): ?>
-                        <textarea name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" rows="8" maxlength="<?= $maxLength > 0 ? $maxLength : 10000 ?>"><?= htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') ?></textarea>
+                        <textarea class="admin-rich-input" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" rows="8" maxlength="<?= $maxLength > 0 ? $maxLength : 10000 ?>" <?= $placeholder !== '' ? 'placeholder="' . htmlspecialchars($placeholder, ENT_QUOTES, 'UTF-8') . '"' : '' ?>><?= htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') ?></textarea>
+                        <?php if ($isText): ?><small class="admin-field__hint">Separate paragraphs with a blank line. Line breaks are preserved on the public page.</small><?php endif; ?>
                     <?php elseif ($isDateTime): ?>
                         <input type="datetime-local" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" value="<?= htmlspecialchars($value ? date('Y-m-d\TH:i', strtotime((string) $value)) : '', ENT_QUOTES, 'UTF-8') ?>">
                     <?php elseif (preg_match('/int|decimal|float|double/', $type) === 1): ?>

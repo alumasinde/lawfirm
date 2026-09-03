@@ -1,3 +1,11 @@
+<?php
+$overviewHeading = trim((string) ($area['overview_heading'] ?? '')) ?: 'Strategic legal support for your business';
+$approachHeading = trim((string) ($area['approach_heading'] ?? '')) ?: 'Practical, commercially minded counsel';
+$ctaHeading = trim((string) ($area['cta_heading'] ?? '')) ?: 'Let us help you navigate the next step';
+$hasApproach = trim((string) ($area['approach_body'] ?? '')) !== '';
+$ctaBody = trim((string) ($area['cta_body'] ?? ''));
+$overviewIntro = trim((string) ($area['overview_intro'] ?? ''));
+?>
 <section class="page-hero page-hero--compact">
     <div class="container">
         <p class="section-label">Practice Area</p>
@@ -11,14 +19,24 @@
         <div class="practice-detail__main">
             <section class="practice-detail__section">
                 <p class="section-label">Overview</p>
+                <h2><?= htmlspecialchars($overviewHeading, ENT_QUOTES, 'UTF-8') ?></h2>
+                <?php if ($overviewIntro !== ''): ?><p class="practice-detail__lead"><?= nl2br(htmlspecialchars($overviewIntro, ENT_QUOTES, 'UTF-8')) ?></p><?php endif; ?>
                 <div class="rich-content"><?= nl2br(htmlspecialchars((string) ($area['body'] ?? ''), ENT_QUOTES, 'UTF-8')) ?></div>
             </section>
+
+            <?php if ($hasApproach): ?>
+                <section class="practice-detail__section practice-approach">
+                    <p class="section-label">Our approach</p>
+                    <h2><?= htmlspecialchars($approachHeading, ENT_QUOTES, 'UTF-8') ?></h2>
+                    <div class="rich-content"><?= nl2br(htmlspecialchars((string) $area['approach_body'], ENT_QUOTES, 'UTF-8')) ?></div>
+                </section>
+            <?php endif; ?>
 
             <?php if ($details['experience'] !== []): ?>
                 <section class="practice-detail__section">
                     <p class="section-label">Experience</p>
                     <h2>Experience in this area</h2>
-                    <p class="practice-detail__intro">Some of our recent experience in this area includes:</p>
+                    <p class="practice-detail__intro">Our experience includes matters such as:</p>
                     <ol class="practice-experience">
                         <?php foreach ($details['experience'] as $item): ?><li><?= nl2br(htmlspecialchars((string) $item['content'], ENT_QUOTES, 'UTF-8')) ?></li><?php endforeach; ?>
                     </ol>
@@ -29,6 +47,7 @@
                 <section class="practice-detail__section">
                     <p class="section-label">Recent Insights</p>
                     <h2>Articles and publications</h2>
+                    <p class="practice-detail__intro">Related legal commentary and practical guidance from our team.</p>
                     <div class="practice-insights">
                         <?php foreach ($details['insights'] as $article): ?>
                             <a href="/insights/<?= rawurlencode($article['slug']) ?>">
@@ -40,12 +59,20 @@
                     </div>
                 </section>
             <?php endif; ?>
+
+            <section class="practice-detail__section practice-detail__next-step">
+                <p class="section-label">Need advice?</p>
+                <h2><?= htmlspecialchars($ctaHeading, ENT_QUOTES, 'UTF-8') ?></h2>
+                <p><?= $ctaBody !== '' ? nl2br(htmlspecialchars($ctaBody, ENT_QUOTES, 'UTF-8')) : 'Every matter is different. Speak with our team about your circumstances, objectives and the legal support you require.' ?></p>
+                <a class="button button--primary" href="/contact">Discuss your matter <span aria-hidden="true">→</span></a>
+            </section>
         </div>
 
         <aside class="practice-detail__sidebar">
             <?php if ($details['contacts'] !== []): ?>
                 <section class="practice-contacts">
                     <p class="section-label">Key Contacts</p>
+                    <h2>Our team</h2>
                     <?php foreach ($details['contacts'] as $contact): ?>
                         <?php $name = trim((string) $contact['first_name'] . ' ' . (string) $contact['last_name']); ?>
                         <article>
@@ -60,6 +87,7 @@
             <?php if ($details['related'] !== []): ?>
                 <section class="practice-related">
                     <p class="section-label">Related Services</p>
+                    <h2>You may also need</h2>
                     <div>
                         <?php foreach ($details['related'] as $related): ?><a href="/practice-areas/<?= rawurlencode($related['slug']) ?>"><?= htmlspecialchars($related['name'], ENT_QUOTES, 'UTF-8') ?><span>→</span></a><?php endforeach; ?>
                     </div>
