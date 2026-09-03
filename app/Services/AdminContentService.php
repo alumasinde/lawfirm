@@ -17,6 +17,7 @@ final class AdminContentService
     {
         return array_map(function (array $resource): array {
             $resource['list_columns'] = $this->decodeColumns($resource['list_columns_json'] ?? '[]');
+            $resource['field_config'] = $this->decodeConfig($resource['field_config_json'] ?? '{}');
 
             return $resource;
         }, $this->repository->resources());
@@ -31,6 +32,7 @@ final class AdminContentService
         }
 
         $resource['list_columns'] = $this->decodeColumns($resource['list_columns_json'] ?? '[]');
+        $resource['field_config'] = $this->decodeConfig($resource['field_config_json'] ?? '{}');
 
         return $resource;
     }
@@ -162,6 +164,21 @@ final class AdminContentService
         }
 
         return is_array($columns) ? array_values(array_filter($columns, 'is_string')) : [];
+    }
+
+    private function decodeConfig(?string $json): array
+    {
+        if (!is_string($json) || $json === '') {
+            return [];
+        }
+
+        try {
+            $config = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            return [];
+        }
+
+        return is_array($config) ? $config : [];
     }
 
     private function isBoolean(string $type): bool
