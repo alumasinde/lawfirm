@@ -32,7 +32,7 @@ $renderRich = static function (mixed $value): string {
         <p class="section-label">Practice Area</p>
         <h1><?= htmlspecialchars($area['name'], ENT_QUOTES, 'UTF-8') ?></h1>
         <?php if (!empty($area['excerpt'])): ?>
-            <p class="lead"><?= htmlspecialchars($area['excerpt'], ENT_QUOTES, 'UTF-8') ?></p>
+            <div class="lead rich-content rich-content--excerpt"><?= $renderRich($area['excerpt']) ?></div>
         <?php endif; ?>
     </div>
 </section>
