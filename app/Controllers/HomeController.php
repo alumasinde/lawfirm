@@ -8,7 +8,9 @@ use App\Core\Application;
 use App\Core\Controller;
 use App\Core\Request;
 use App\Repositories\HomepageRepository;
+use App\Repositories\SiteRepository;
 use App\Services\HomepageService;
+use App\Services\SiteService;
 
 final class HomeController extends Controller
 {
@@ -18,13 +20,14 @@ final class HomeController extends Controller
 
     public function index(Request $request): string
     {
-        $service = new HomepageService(
-            new HomepageRepository($this->app->database())
-        );
+        $service = new HomepageService(new HomepageRepository($this->app->database()));
+        $site = new SiteService(new SiteRepository($this->app->database()));
+        $content = $site->content(['site_identity']);
 
         return $this->view('home/index', [
+            ...$site->layoutData(),
             ...$service->data(),
-            'title' => 'Webi Wenani & Associates Advocates | Legal Services',
+            'title' => $content['site_identity']['meta_title'] ?? 'Webi Wenani & Associates Advocates',
         ]);
     }
 }
