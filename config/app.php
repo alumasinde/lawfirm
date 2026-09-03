@@ -26,4 +26,7 @@ return [
         'max_attempts' => (int) Config::env('AUTH_MAX_ATTEMPTS', 5),
         'window_minutes' => (int) Config::env('AUTH_WINDOW_MINUTES', 15),
     ],
+    'media' => [
+        'max_upload_bytes' => (int) Config::env('MEDIA_MAX_UPLOAD_BYTES', 10485760),
+    ],
 ];
