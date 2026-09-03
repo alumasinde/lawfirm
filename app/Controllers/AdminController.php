@@ -127,6 +127,7 @@ final class AdminController extends Controller
             'resource' => $resource,
             'fields' => $this->content->fields($resource),
             'record' => [],
+            'error' => $request->query('error'),
             'action' => '/admin/content/' . rawurlencode($resourceKey),
             'submitLabel' => 'Create',
         ]);
