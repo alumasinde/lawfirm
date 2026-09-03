@@ -11,6 +11,7 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Repositories\PublicRepository;
 use App\Repositories\SiteRepository;
+use App\Repositories\PracticeAreaDetailRepository;
 use App\Services\PublicService;
 use App\Services\SiteService;
 use InvalidArgumentException;
@@ -19,11 +20,13 @@ final class PublicController extends Controller
 {
     private PublicService $service;
     private SiteService $site;
+    private PracticeAreaDetailRepository $practiceAreaDetails;
 
     public function __construct(Application $app)
     {
         $this->service = new PublicService(new PublicRepository($app->database()));
         $this->site = new SiteService(new SiteRepository($app->database()));
+        $this->practiceAreaDetails = new PracticeAreaDetailRepository($app->database());
     }
 
     protected function view(string $view, array $data = []): string
@@ -93,11 +96,11 @@ final class PublicController extends Controller
             return $this->notFound();
         }
 
-        return $this->view('public/detail', [
+        return $this->view('public/practice-area-detail', [
             'title' => $area['meta_title'] ?: $area['name'],
             'metaDescription' => $area['meta_description'] ?: ($area['excerpt'] ?? ''),
-            'item' => $area,
-            'type' => 'Practice Area',
+            'area' => $area,
+            'details' => $this->practiceAreaDetails->publicDetails((int) $area['id']),
         ]);
     }
 
