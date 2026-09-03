@@ -1,3 +1,14 @@
+<?php
+$currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$navItems = [
+    '/' => 'Home',
+    '/about' => 'About',
+    '/practice-areas' => 'Practice Areas',
+    '/advocates' => 'Advocates',
+    '/insights' => 'Insights',
+    '/faq' => 'FAQ',
+];
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -11,26 +22,61 @@
 <a class="skip-link" href="#main-content">Skip to content</a>
 
 <header class="site-header">
-    <div class="site-header__inner">
-        <a class="site-brand" href="/">Webi Wenani <span>& Associates Advocates</span></a>
+    <div class="site-header__top">
+        <div class="site-header__top-inner">
+            <span>Professional legal services and representation</span>
+            <a href="/contact">Contact the Firm</a>
+        </div>
+    </div>
+    <div class="site-header__main">
+        <div class="site-header__inner">
+            <a class="site-brand" href="/" aria-label="Webi Wenani & Associates Advocates home">
+                Webi Wenani
+                <span>& Associates Advocates</span>
+            </a>
 
-        <nav class="site-nav" aria-label="Main navigation">
-            <a href="/">Home</a>
-            <a href="/about">About</a>
-            <a href="/practice-areas">Practice Areas</a>
-            <a href="/advocates">Advocates</a>
-            <a href="/insights">Insights</a>
-            <a href="/faq">FAQ</a>
-            <a class="button button--primary site-nav__cta" href="/contact">Book a Consultation</a>
-        </nav>
+            <button class="site-nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" data-nav-toggle>☰</button>
+
+            <nav class="site-nav" aria-label="Main navigation" data-site-nav>
+                <?php foreach ($navItems as $href => $label): ?>
+                    <?php $active = $href === '/' ? $currentPath === '/' : str_starts_with($currentPath, $href); ?>
+                    <a class="<?= $active ? 'is-active' : '' ?>" href="<?= $href ?>"><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></a>
+                <?php endforeach; ?>
+                <a class="button button--primary site-nav__cta" href="/contact">Book a Consultation</a>
+            </nav>
+        </div>
     </div>
 </header>
 
 <main id="main-content"><?= $content ?></main>
 
 <footer class="site-footer">
-    <div class="container">
-        <p>Webi Wenani & Associates Advocates</p>
+    <div class="container site-footer__main">
+        <div class="site-footer__grid">
+            <div>
+                <a class="site-brand" href="/" style="color:#fff">Webi Wenani<span>& Associates Advocates</span></a>
+                <p>Clear legal advice, careful preparation and committed professional representation.</p>
+            </div>
+            <div>
+                <h3>Explore</h3>
+                <div class="site-footer__links">
+                    <a href="/about">About the Firm</a>
+                    <a href="/practice-areas">Practice Areas</a>
+                    <a href="/advocates">Our Advocates</a>
+                </div>
+            </div>
+            <div>
+                <h3>Connect</h3>
+                <div class="site-footer__links">
+                    <a href="/insights">Insights & Updates</a>
+                    <a href="/faq">Frequently Asked Questions</a>
+                    <a href="/contact">Book a Consultation</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="site-footer__bottom">
+        <div class="container"><p>&copy; <?= date('Y') ?> Webi Wenani & Associates Advocates. All rights reserved.</p></div>
     </div>
 </footer>
 
