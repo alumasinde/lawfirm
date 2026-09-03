@@ -30,6 +30,9 @@ $app->router()->get('/admin', [AdminController::class, 'dashboard']);
 $app->router()->post('/admin/logout', [AdminController::class, 'logout']);
 
 $app->router()->get('/admin/manage', [AdminController::class, 'resources']);
+$app->router()->get('/admin/media', [AdminController::class, 'media']);
+$app->router()->post('/admin/media', [AdminController::class, 'mediaUpload']);
+$app->router()->post('/admin/media/{id}/delete', [AdminController::class, 'mediaDelete']);
 $app->router()->get('/admin/content/{resource}', [AdminController::class, 'contentList']);
 $app->router()->get('/admin/content/{resource}/create', [AdminController::class, 'contentCreate']);
 $app->router()->post('/admin/content/{resource}', [AdminController::class, 'contentStore']);
