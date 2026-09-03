@@ -34,8 +34,11 @@
                 $contentHint = (string) ($fieldConfig['hint'] ?? '');
                 $isRichText = $configuredType === 'richtext';
                 ?>
-                <label class="<?= ($isText || $configuredType === 'textarea' || $isRichText) ? 'admin-field admin-field--wide' : 'admin-field' ?>">
-                    <span><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></span>
+                <div class="<?= ($isText || $configuredType === 'textarea' || $isRichText) ? 'admin-field admin-field--wide' : 'admin-field' ?>">
+                    <div class="admin-field__label-row">
+                        <label for="field-<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></label>
+                        <?php if ($isRichText): ?><span class="admin-field__format-badge">Rich text</span><?php endif; ?>
+                    </div>
                     <?php if ($contentHint !== ''): ?><small class="admin-field__hint"><?= htmlspecialchars($contentHint, ENT_QUOTES, 'UTF-8') ?></small><?php endif; ?>
 
                     <?php if ($configuredType === 'select' && $options !== []): ?>
@@ -64,28 +67,36 @@
                         </span>
 
                     <?php elseif ($isRichText): ?>
-                        <div class="rich-editor" data-rich-editor>
+                        <div class="rich-editor<?= $name === 'excerpt' ? ' rich-editor--compact' : '' ?>" data-rich-editor data-editor-name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>">
                             <div class="rich-editor__toolbar" role="toolbar" aria-label="<?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?> formatting tools">
-                                <button type="button" data-command="bold" title="Bold"><strong>B</strong></button>
-                                <button type="button" data-command="italic" title="Italic"><em>I</em></button>
-                                <button type="button" data-command="underline" title="Underline"><u>U</u></button>
-                                <span class="rich-editor__divider" aria-hidden="true"></span>
-                                <button type="button" data-block="p" title="Paragraph">P</button>
-                                <button type="button" data-block="h2" title="Heading">H2</button>
-                                <button type="button" data-block="h3" title="Subheading">H3</button>
-                                <span class="rich-editor__divider" aria-hidden="true"></span>
-                                <button type="button" data-command="insertUnorderedList" title="Bullet list">• List</button>
-                                <button type="button" data-command="insertOrderedList" title="Numbered list">1. List</button>
-                                <button type="button" data-command="formatBlock" data-value="blockquote" title="Quote">Quote</button>
-                                <span class="rich-editor__divider" aria-hidden="true"></span>
-                                <button type="button" data-command="createLink" title="Add link">Link</button>
-                                <button type="button" data-command="unlink" title="Remove link">Unlink</button>
-                                <button type="button" data-command="removeFormat" title="Clear inline formatting">Clear</button>
+                                <div class="rich-editor__group">
+                                    <button type="button" data-command="bold" title="Bold (Ctrl/Cmd + B)" aria-label="Bold"><strong>B</strong></button>
+                                    <button type="button" data-command="italic" title="Italic (Ctrl/Cmd + I)" aria-label="Italic"><em>I</em></button>
+                                    <button type="button" data-command="underline" title="Underline (Ctrl/Cmd + U)" aria-label="Underline"><u>U</u></button>
+                                </div>
+                                <?php if ($name !== 'excerpt'): ?>
+                                    <div class="rich-editor__group">
+                                        <button type="button" data-block="p" title="Paragraph" aria-label="Paragraph">P</button>
+                                        <button type="button" data-block="h2" title="Heading 2" aria-label="Heading 2">H2</button>
+                                        <button type="button" data-block="h3" title="Heading 3" aria-label="Heading 3">H3</button>
+                                    </div>
+                                    <div class="rich-editor__group">
+                                        <button type="button" data-command="insertUnorderedList" title="Bullet list" aria-label="Bullet list">•</button>
+                                        <button type="button" data-command="insertOrderedList" title="Numbered list" aria-label="Numbered list">1.</button>
+                                        <button type="button" data-command="formatBlock" data-value="blockquote" title="Quote" aria-label="Quote">❝</button>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="rich-editor__group">
+                                    <button type="button" data-command="createLink" title="Add link" aria-label="Add link">↗</button>
+                                    <button type="button" data-command="unlink" title="Remove link" aria-label="Remove link">⌁</button>
+                                    <button type="button" data-command="removeFormat" title="Clear formatting" aria-label="Clear formatting">Tx</button>
+                                </div>
                             </div>
-                            <div class="rich-editor__canvas" contenteditable="true" role="textbox" aria-multiline="true" data-rich-canvas></div>
-                            <textarea class="rich-editor__source" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" data-rich-source hidden><?= htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') ?></textarea>
+                            <div class="rich-editor__canvas" contenteditable="true" role="textbox" aria-multiline="true" tabindex="0" data-rich-canvas></div>
+                            <textarea id="field-<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" class="rich-editor__source" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" data-rich-source rows="<?= $name === 'excerpt' ? '4' : '12' ?>" placeholder="<?= $name === 'excerpt' ? 'Write a concise introduction…' : 'Start writing your content…' ?>"><?= htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') ?></textarea>
+                            <div class="rich-editor__status" data-rich-status>Click into the editor and start typing.</div>
                         </div>
-                        <small class="admin-field__hint">Use the toolbar for headings, bold, italics, lists, quotes and links. Your formatting is saved and shown on the public page.</small>
+                        <small class="admin-field__hint"><?= $name === 'excerpt' ? 'A short introduction for practice area cards and the page hero. Bold and italic formatting are supported.' : 'Click into the editor and write naturally. Formatting is saved automatically when you save the page.' ?></small>
 
                     <?php elseif ($isText || $configuredType === 'textarea'): ?>
                         <textarea class="admin-rich-input" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" rows="8" maxlength="<?= $maxLength > 0 ? $maxLength : 10000 ?>" <?= $placeholder !== '' ? 'placeholder="' . htmlspecialchars($placeholder, ENT_QUOTES, 'UTF-8') . '"' : '' ?>><?= htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') ?></textarea>
@@ -100,7 +111,7 @@
                     <?php else: ?>
                         <input type="<?= in_array($configuredType, ['email', 'tel', 'url', 'text'], true) ? htmlspecialchars($configuredType, ENT_QUOTES, 'UTF-8') : 'text' ?>" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" value="<?= htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') ?>" maxlength="<?= $maxLength > 0 ? $maxLength : 500 ?>" <?= $placeholder !== '' ? 'placeholder="' . htmlspecialchars($placeholder, ENT_QUOTES, 'UTF-8') . '"' : '' ?>>
                     <?php endif; ?>
-                </label>
+                </div>
             <?php endforeach; ?>
         </div>
 
@@ -112,40 +123,63 @@
 </section>
 
 <script>
-document.querySelectorAll('[data-rich-editor]').forEach(function (editor) {
-    const canvas = editor.querySelector('[data-rich-canvas]');
-    const source = editor.querySelector('[data-rich-source]');
+(function () {
+    function bootRichEditors() {
+        document.querySelectorAll('[data-rich-editor]').forEach(function (editor) {
+            const canvas = editor.querySelector('[data-rich-canvas]');
+            const source = editor.querySelector('[data-rich-source]');
+            const status = editor.querySelector('[data-rich-status]');
 
-    if (!canvas || !source) return;
+            if (!canvas || !source) return;
 
-    canvas.innerHTML = source.value || '';
+            canvas.innerHTML = source.value || '';
+            editor.classList.add('is-enhanced');
 
-    const sync = function () {
-        source.value = canvas.innerHTML.trim();
-    };
+            const sync = function () {
+                source.value = canvas.innerHTML.trim();
+                if (status) status.textContent = 'Ready to save';
+            };
 
-    canvas.addEventListener('input', sync);
-    canvas.addEventListener('blur', sync);
+            canvas.addEventListener('input', sync);
+            canvas.addEventListener('blur', sync);
+            canvas.addEventListener('focus', function () {
+                if (status) status.textContent = 'Editing';
+            });
 
-    editor.querySelectorAll('button').forEach(function (button) {
-        button.addEventListener('mousedown', function (event) {
-            event.preventDefault();
-            canvas.focus();
+            editor.querySelectorAll('button[data-command], button[data-block]').forEach(function (button) {
+                button.addEventListener('mousedown', function (event) {
+                    event.preventDefault();
+                });
 
-            if (button.dataset.block) {
-                document.execCommand('formatBlock', false, button.dataset.block.toUpperCase());
-            } else if (button.dataset.command === 'createLink') {
-                const url = window.prompt('Enter the link URL');
-                if (url) document.execCommand('createLink', false, url.trim());
-            } else {
-                document.execCommand(button.dataset.command, false, button.dataset.value || null);
+                button.addEventListener('click', function () {
+                    canvas.focus();
+
+                    if (button.dataset.block) {
+                        document.execCommand('formatBlock', false, '<' + button.dataset.block + '>');
+                    } else if (button.dataset.command === 'createLink') {
+                        const url = window.prompt('Enter the link URL');
+                        if (url) {
+                            document.execCommand('createLink', false, url.trim());
+                        }
+                    } else {
+                        document.execCommand(button.dataset.command, false, null);
+                    }
+
+                    sync();
+                });
+            });
+
+            const form = editor.closest('form');
+            if (form) {
+                form.addEventListener('submit', sync);
             }
-
-            sync();
         });
-    });
+    }
 
-    const form = editor.closest('form');
-    if (form) form.addEventListener('submit', sync);
-});
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bootRichEditors);
+    } else {
+        bootRichEditors();
+    }
+})();
 </script>
