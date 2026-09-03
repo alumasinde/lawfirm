@@ -133,12 +133,17 @@ final class PublicController extends Controller
 
     public function contact(Request $request): string
     {
-        $content = $this->site->content(['contact_page', 'contact_details']);
+        $content = $this->site->content(['contact_page', 'contact_details', 'contact_guidance_response', 'contact_guidance_services', 'contact_guidance_privacy']);
 
         return $this->view('public/contact', [
             'title' => $content['contact_page']['meta_title'] ?? 'Contact Us',
             'page' => $content['contact_page'] ?? null,
             'details' => $content['contact_details'] ?? null,
+            'guidance' => array_values(array_filter([
+                $content['contact_guidance_response'] ?? null,
+                $content['contact_guidance_services'] ?? null,
+                $content['contact_guidance_privacy'] ?? null,
+            ])),
             'csrfToken' => Csrf::token(),
             'status' => $request->query('status'),
         ]);
