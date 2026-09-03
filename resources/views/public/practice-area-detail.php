@@ -1,3 +1,11 @@
+<?php
+$overviewHeading = trim((string) ($area['overview_heading'] ?? '')) ?: 'Strategic legal support for your business';
+$approachHeading = trim((string) ($area['approach_heading'] ?? '')) ?: 'Practical, commercially minded counsel';
+$ctaHeading = trim((string) ($area['cta_heading'] ?? '')) ?: 'Let us help you navigate the next step';
+$hasApproach = trim((string) ($area['approach_body'] ?? '')) !== '';
+$ctaBody = trim((string) ($area['cta_body'] ?? ''));
+$overviewIntro = trim((string) ($area['overview_intro'] ?? ''));
+?>
 <section class="page-hero page-hero--compact">
     <div class="container">
         <p class="section-label">Practice Area</p>
@@ -11,9 +19,18 @@
         <div class="practice-detail__main">
             <section class="practice-detail__section">
                 <p class="section-label">Overview</p>
-                <h2>Strategic legal support for your business</h2>
+                <h2><?= htmlspecialchars($overviewHeading, ENT_QUOTES, 'UTF-8') ?></h2>
+                <?php if ($overviewIntro !== ''): ?><p class="practice-detail__lead"><?= nl2br(htmlspecialchars($overviewIntro, ENT_QUOTES, 'UTF-8')) ?></p><?php endif; ?>
                 <div class="rich-content"><?= nl2br(htmlspecialchars((string) ($area['body'] ?? ''), ENT_QUOTES, 'UTF-8')) ?></div>
             </section>
+
+            <?php if ($hasApproach): ?>
+                <section class="practice-detail__section practice-approach">
+                    <p class="section-label">Our approach</p>
+                    <h2><?= htmlspecialchars($approachHeading, ENT_QUOTES, 'UTF-8') ?></h2>
+                    <div class="rich-content"><?= nl2br(htmlspecialchars((string) $area['approach_body'], ENT_QUOTES, 'UTF-8')) ?></div>
+                </section>
+            <?php endif; ?>
 
             <?php if ($details['experience'] !== []): ?>
                 <section class="practice-detail__section">
@@ -45,8 +62,8 @@
 
             <section class="practice-detail__section practice-detail__next-step">
                 <p class="section-label">Need advice?</p>
-                <h2>Let us help you navigate the next step.</h2>
-                <p>Every matter is different. Speak with our team about your circumstances, objectives and the legal support you require.</p>
+                <h2><?= htmlspecialchars($ctaHeading, ENT_QUOTES, 'UTF-8') ?></h2>
+                <p><?= $ctaBody !== '' ? nl2br(htmlspecialchars($ctaBody, ENT_QUOTES, 'UTF-8')) : 'Every matter is different. Speak with our team about your circumstances, objectives and the legal support you require.' ?></p>
                 <a class="button button--primary" href="/contact">Discuss your matter <span aria-hidden="true">→</span></a>
             </section>
         </div>
