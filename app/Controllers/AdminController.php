@@ -187,6 +187,7 @@ final class AdminController extends Controller
             'mediaOptions' => $this->media->options(),
             'action' => '/admin/content/' . rawurlencode($resourceKey) . '/' . (int) $id,
             'submitLabel' => 'Save changes',
+            'message' => $request->query('message'),
             'error' => $request->query('error'),
         ]);
     }
@@ -204,7 +205,9 @@ final class AdminController extends Controller
                 'resource' => $resourceKey,
                 'id' => $recordId,
             ]);
-            Response::redirect('/admin/content/' . rawurlencode($resourceKey) . '?message=updated');
+            Response::redirect(
+                '/admin/content/' . rawurlencode($resourceKey) . '/' . $recordId . '/edit?message=updated'
+            );
         } catch (InvalidArgumentException $exception) {
             Response::redirect('/admin/content/' . rawurlencode($resourceKey) . '/' . $recordId . '/edit?error=' . rawurlencode($exception->getMessage()));
         }
