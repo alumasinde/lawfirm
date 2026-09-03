@@ -109,7 +109,8 @@ final class AdminContentService
             }
 
             if ($name === 'slug' && $value === '') {
-                $value = $this->slugify((string) ($input['name'] ?? $input['title'] ?? ''));
+                $value = $this->slugSource($input);
+                $value = $this->slugify($value);
             }
 
             if ($value === '' && !$nullable) {
@@ -128,7 +129,7 @@ final class AdminContentService
         }
 
         if (array_key_exists('slug', $data) && $data['slug'] === '') {
-            $data['slug'] = $this->slugify((string) ($input['name'] ?? $input['title'] ?? ''));
+            $data['slug'] = $this->slugify($this->slugSource($input));
         }
 
         return $data;
@@ -153,6 +154,17 @@ final class AdminContentService
     private function label(string $field): string
     {
         return ucwords(str_replace('_', ' ', $field));
+    }
+
+    private function slugSource(array $input): string
+    {
+        $source = trim((string) ($input['name'] ?? $input['title'] ?? ''));
+
+        if ($source !== '') {
+            return $source;
+        }
+
+        return trim((string) ($input['first_name'] ?? '') . ' ' . (string) ($input['last_name'] ?? ''));
     }
 
     private function slugify(string $value): string
