@@ -31,7 +31,10 @@ final class AdminController extends Controller
     {
         $this->service = new AdminService(new AdminRepository($app->database()));
         $this->content = new AdminContentService(new AdminContentRepository($app->database()));
-        $this->media = new AdminMediaService(new AdminMediaRepository($app->database()));
+        $this->media = new AdminMediaService(
+            new AdminMediaRepository($app->database()),
+            max(1, (int) $app->config('media.max_upload_bytes', 10485760))
+        );
         $this->sessionConfig = (array) $app->config('session', []);
         $this->authConfig = (array) $app->config('auth', []);
     }
