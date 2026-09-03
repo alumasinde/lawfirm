@@ -95,6 +95,7 @@ final class PublicController extends Controller
 
         return $this->view('public/detail', [
             'title' => $area['meta_title'] ?: $area['name'],
+            'metaDescription' => $area['meta_description'] ?: ($area['excerpt'] ?? ''),
             'item' => $area,
             'type' => 'Practice Area',
         ]);
@@ -112,6 +113,7 @@ final class PublicController extends Controller
 
         return $this->view('public/advocate', [
             'title' => $advocate['meta_title'] ?: $advocate['name'],
+            'metaDescription' => $advocate['meta_description'] ?: ($advocate['bio'] ?? ''),
             'advocate' => $advocate,
         ]);
     }
@@ -126,6 +128,7 @@ final class PublicController extends Controller
 
         return $this->view('public/detail', [
             'title' => $article['meta_title'] ?: $article['title'],
+            'metaDescription' => $article['meta_description'] ?: ($article['excerpt'] ?? ''),
             'item' => $article,
             'type' => 'Insight',
         ]);
