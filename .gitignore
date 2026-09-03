@@ -8,3 +8,6 @@
 !/storage/cache/.gitkeep
 .DS_Store
 Thumbs.db
+
+/public/uploads/media/*
+!/public/uploads/media/.gitkeep
