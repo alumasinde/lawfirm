@@ -28,3 +28,11 @@ $app->router()->get('/admin/login', [AdminController::class, 'login']);
 $app->router()->post('/admin/login', [AdminController::class, 'authenticate']);
 $app->router()->get('/admin', [AdminController::class, 'dashboard']);
 $app->router()->post('/admin/logout', [AdminController::class, 'logout']);
+
+$app->router()->get('/admin/manage', [AdminController::class, 'resources']);
+$app->router()->get('/admin/content/{resource}', [AdminController::class, 'contentList']);
+$app->router()->get('/admin/content/{resource}/create', [AdminController::class, 'contentCreate']);
+$app->router()->post('/admin/content/{resource}', [AdminController::class, 'contentStore']);
+$app->router()->get('/admin/content/{resource}/{id}/edit', [AdminController::class, 'contentEdit']);
+$app->router()->post('/admin/content/{resource}/{id}', [AdminController::class, 'contentUpdate']);
+$app->router()->post('/admin/content/{resource}/{id}/delete', [AdminController::class, 'contentDelete']);
