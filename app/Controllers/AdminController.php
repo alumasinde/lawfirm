@@ -176,7 +176,9 @@ final class AdminController extends Controller
         }
 
         return View::adminLayout('admin/content-form', [
-            'title' => 'Edit ' . $resource['label'],
+            'title' => ($resourceKey === 'practice-areas'
+                ? 'Edit Practice Area: ' . (string) ($record['name'] ?? '')
+                : 'Edit ' . $resource['label']),
             'user' => $user,
             'resources' => $this->content->resources(),
             'resource' => $resource,
