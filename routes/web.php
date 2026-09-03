@@ -30,6 +30,8 @@ $app->router()->get('/admin', [AdminController::class, 'dashboard']);
 $app->router()->post('/admin/logout', [AdminController::class, 'logout']);
 
 $app->router()->get('/admin/manage', [AdminController::class, 'resources']);
+$app->router()->get('/admin/practice-areas/{id}/details', [AdminController::class, 'practiceAreaDetails']);
+$app->router()->post('/admin/practice-areas/{id}/details', [AdminController::class, 'practiceAreaDetailsUpdate']);
 $app->router()->get('/admin/homepage', [AdminController::class, 'homepage']);
 $app->router()->post('/admin/homepage/sections/{id}', [AdminController::class, 'homepageSectionUpdate']);
 $app->router()->post('/admin/homepage/slides', [AdminController::class, 'homepageSlideStore']);
