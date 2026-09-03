@@ -1,0 +1,1 @@
+<a class="button button--<?= htmlspecialchars($variant ?? 'primary', ENT_QUOTES, 'UTF-8') ?>" href="<?= htmlspecialchars($href ?? '#', ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($label ?? '', ENT_QUOTES, 'UTF-8') ?></a>

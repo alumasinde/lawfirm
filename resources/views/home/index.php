@@ -1,14 +1,10 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Webi Wenani & Associates Advocates</title>
-</head>
-<body>
-    <main>
-        <h1>Webi Wenani & Associates Advocates</h1>
-        <p>Application foundation is ready.</p>
-    </main>
-</body>
-</html>
+<section class="page-section">
+    <div class="container">
+        <p class="section-label">Webi Wenani & Associates Advocates</p>
+        <h1>Trusted legal counsel. Practical representation.</h1>
+        <p>Professional legal services for individuals, businesses and organisations.</p>
+        <p>
+            <?php $variant = 'primary'; $href = '/contact'; $label = 'Contact Us'; require BASE_PATH . '/resources/views/components/button.php'; ?>
+        </p>
+    </div>
+</section>

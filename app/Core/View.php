@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\View\StyleLinker;
+
 final class View
 {
     public static function render(string $view, array $data = []): string
@@ -18,6 +20,18 @@ final class View
 
         ob_start();
         require $path;
+
+        return (string) ob_get_clean();
+    }
+
+    public static function layout(string $view, array $data = []): string
+    {
+        $content = self::render($view, $data);
+        $styleLinker = (new StyleLinker())->render();
+        $title = $data['title'] ?? 'Webi Wenani & Associates Advocates';
+
+        ob_start();
+        require BASE_PATH . '/resources/views/layouts/public.php';
 
         return (string) ob_get_clean();
     }
