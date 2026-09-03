@@ -17,10 +17,11 @@ A custom PHP and MySQL website and content management system for a Kenyan law fi
    `php database/migrate.php`
 
 4. Point your web server document root to `public/`.
-5. Run `php -S localhost:8000 -t public` for local development.
-php -S 0.0.0.0:8000 -t public public/index.php
+5. Run the built-in PHP server for local development:
 
-lawfirm.test:8000 & lawfirm.test:8000/admin/loin
+   `php -S 0.0.0.0:8000 -t public public/index.php`
+
+   Open the site at `http://lawfirm.test:8000` and the administration area at `http://lawfirm.test:8000/admin`.
 
 ## Database migrations
 
@@ -40,3 +41,14 @@ The active design is controlled by `config/design/active.ini`. It contains seman
 - `public/` web root
 - `resources/` views and reusable components
 - `storage/` runtime files
+
+
+## Administration
+
+The administration area is intentionally excluded from public indexing and is available under `/admin`.
+
+After running migrations, the admin foundation provides a database-driven content management workspace for the existing website resources. Resource definitions are stored in `admin_resources`, so the administration navigation and content registry are driven by database configuration rather than duplicated public-site content in templates.
+
+Run pending migrations after pulling updates:
+
+`php database/migrate.php`
