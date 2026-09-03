@@ -28,8 +28,7 @@ $renderRich = static function (mixed $value): string {
 
 <section class="page-hero page-hero--compact practice-detail-hero">
     <div class="container">
-        <a class="practice-detail-hero__back" href="/practice-areas">← Practice Areas</a>
-        <p class="section-label">Practice Area</p>
+        <a class="practice-detail-hero__back" href="/practice-areas">Practice Areas</a>
         <h1><?= htmlspecialchars($area['name'], ENT_QUOTES, 'UTF-8') ?></h1>
         <?php if (!empty($area['excerpt'])): ?>
             <div class="lead rich-content rich-content--excerpt"><?= $renderRich($area['excerpt']) ?></div>
@@ -94,7 +93,7 @@ $renderRich = static function (mixed $value): string {
                                     <?= !empty($article['category']) ? htmlspecialchars($article['category'], ENT_QUOTES, 'UTF-8') : 'Insight' ?>
                                 </span>
                                 <strong><?= htmlspecialchars($article['title'], ENT_QUOTES, 'UTF-8') ?></strong>
-                                <small>Read insight <b aria-hidden="true">→</b></small>
+                                <small>Read insight <b aria-hidden="true"></b></small>
                             </a>
                         <?php endforeach; ?>
                     </div>
@@ -147,7 +146,7 @@ $renderRich = static function (mixed $value): string {
                         <?php foreach ($details['related'] as $related): ?>
                             <a href="/practice-areas/<?= rawurlencode($related['slug']) ?>">
                                 <?= htmlspecialchars($related['name'], ENT_QUOTES, 'UTF-8') ?>
-                                <span aria-hidden="true">→</span>
+                                <span aria-hidden="true"></span>
                             </a>
                         <?php endforeach; ?>
                     </div>
@@ -157,7 +156,7 @@ $renderRich = static function (mixed $value): string {
             <section class="practice-detail__contact-card">
                 <p class="section-label">Confidential enquiry</p>
                 <p>Tell us briefly about the matter and our team can direct your enquiry to the appropriate person.</p>
-                <a href="/contact">Contact the firm <span aria-hidden="true">→</span></a>
+                <a href="/contact">Contact the firm <span aria-hidden="true"></span></a>
             </section>
         </aside>
     </div>
