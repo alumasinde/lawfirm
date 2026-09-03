@@ -90,7 +90,7 @@ final class AdminContentService
             $value = $input[$name] ?? null;
 
             if ($this->isBoolean($type)) {
-                $data[$name] = isset($input[$name]) ? 1 : 0;
+                $data[$name] = filter_var($input[$name] ?? '0', FILTER_VALIDATE_BOOL) ? 1 : 0;
                 continue;
             }
 
@@ -108,6 +108,10 @@ final class AdminContentService
                 continue;
             }
 
+            if ($name === 'slug' && $value === '') {
+                $value = $this->slugify((string) ($input['name'] ?? $input['title'] ?? ''));
+            }
+
             if ($value === '' && !$nullable) {
                 throw new InvalidArgumentException($this->label($name) . ' is required.');
             }
@@ -118,10 +122,6 @@ final class AdminContentService
 
             if (preg_match('/int|decimal|float|double/', $type) === 1 && !is_numeric($value)) {
                 throw new InvalidArgumentException($this->label($name) . ' must be a valid number.');
-            }
-
-            if ($name === 'slug' && $value === '') {
-                $value = $this->slugify((string) ($input['name'] ?? $input['title'] ?? ''));
             }
 
             $data[$name] = $value;
