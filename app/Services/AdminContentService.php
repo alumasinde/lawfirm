@@ -64,13 +64,16 @@ final class AdminContentService
     public function create(array $resource, array $input): int
     {
         $data = $this->payload($resource, $input);
+        $this->validateUnique($resource, $data);
 
         return $this->repository->insert($resource, $data);
     }
 
     public function update(array $resource, int $id, array $input): void
     {
-        $this->repository->update($resource, $id, $this->payload($resource, $input));
+        $data = $this->payload($resource, $input);
+        $this->validateUnique($resource, $data, $id);
+        $this->repository->update($resource, $id, $data);
     }
 
     public function delete(array $resource, int $id): void
@@ -133,6 +136,21 @@ final class AdminContentService
         }
 
         return $data;
+    }
+
+    private function validateUnique(array $resource, array $data, ?int $exceptId = null): void
+    {
+        foreach ($this->repository->uniqueColumns($resource) as $column) {
+            if (!array_key_exists($column, $data) || $data[$column] === null || $data[$column] === '') {
+                continue;
+            }
+
+            if ($this->repository->existsValue($resource, $column, $data[$column], $exceptId)) {
+                throw new InvalidArgumentException(
+                    $this->label($column) . ' must be unique.'
+                );
+            }
+        }
     }
 
     private function decodeColumns(string $json): array
