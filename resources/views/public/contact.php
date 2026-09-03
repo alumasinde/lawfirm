@@ -24,9 +24,12 @@
             <?php if (!empty($page['eyebrow'])): ?><p class="section-label section-label--light"><?= htmlspecialchars($page['eyebrow'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
             <h2><?= htmlspecialchars($details['title'] ?? $page['title'] ?? '', ENT_QUOTES, 'UTF-8') ?></h2>
             <?php if (!empty($details['body'])): ?><p><?= htmlspecialchars($details['body'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
-            <div class="contact-panel__item"><strong>Response</strong><span>Provide your preferred contact details in your enquiry.</span></div>
-            <div class="contact-panel__item"><strong>Legal Services</strong><span>Explore the firm's practice areas before sending your enquiry.</span></div>
-            <div class="contact-panel__item"><strong>Privacy</strong><span>Please avoid sending highly sensitive documents through the initial contact form.</span></div>
+            <?php foreach (($guidance ?? []) as $item): ?>
+                <div class="contact-panel__item">
+                    <?php if (!empty($item['title'])): ?><strong><?= htmlspecialchars($item['title'], ENT_QUOTES, 'UTF-8') ?></strong><?php endif; ?>
+                    <?php if (!empty($item['body'])): ?><span><?= htmlspecialchars($item['body'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
+                </div>
+            <?php endforeach; ?>
         </aside>
     </div>
 </section>
