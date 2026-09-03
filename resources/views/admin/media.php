@@ -22,7 +22,7 @@
             </div>
         </div>
         <form class="admin-upload-form" method="post" action="/admin/media" enctype="multipart/form-data">
-            <input type="hidden" name="_token" value="<?= htmlspecialchars(AppCoreCsrf::token(), ENT_QUOTES, 'UTF-8') ?>">
+            <input type="hidden" name="_token" value="<?= htmlspecialchars(\App\Core\Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
             <label class="admin-field">
                 <span>Image</span>
                 <input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/gif" required>
@@ -64,7 +64,7 @@
                                 <small>Not currently in use</small>
                             <?php endif; ?>
                             <form method="post" action="/admin/media/<?= (int) $media['id'] ?>/delete" onsubmit="return confirm('Delete this image? Images that are in use cannot be deleted.');">
-                                <input type="hidden" name="_token" value="<?= htmlspecialchars(AppCoreCsrf::token(), ENT_QUOTES, 'UTF-8') ?>">
+                                <input type="hidden" name="_token" value="<?= htmlspecialchars(\App\Core\Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
                                 <button type="submit">Delete</button>
                             </form>
                         </div>
