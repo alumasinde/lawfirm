@@ -45,11 +45,13 @@ final class AdminRepository
 
     public function failedAttempts(string $email, string $ip, int $minutes): int
     {
+        $cutoff = date('Y-m-d H:i:s', time() - ($minutes * 60));
+
         return (int) $this->database->statement(
             'SELECT COUNT(*) FROM auth_login_attempts
              WHERE email = :email AND ip_address = :ip AND was_successful = 0
-             AND attempted_at >= DATE_SUB(NOW(), INTERVAL :minutes MINUTE)',
-            ['email' => $email, 'ip' => $ip, 'minutes' => $minutes]
+             AND attempted_at >= :cutoff',
+            ['email' => $email, 'ip' => $ip, 'cutoff' => $cutoff]
         )->fetchColumn();
     }
 
