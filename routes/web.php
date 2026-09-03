@@ -30,6 +30,11 @@ $app->router()->get('/admin', [AdminController::class, 'dashboard']);
 $app->router()->post('/admin/logout', [AdminController::class, 'logout']);
 
 $app->router()->get('/admin/manage', [AdminController::class, 'resources']);
+$app->router()->get('/admin/homepage', [AdminController::class, 'homepage']);
+$app->router()->post('/admin/homepage/sections/{id}', [AdminController::class, 'homepageSectionUpdate']);
+$app->router()->post('/admin/homepage/slides', [AdminController::class, 'homepageSlideStore']);
+$app->router()->post('/admin/homepage/slides/{id}', [AdminController::class, 'homepageSlideUpdate']);
+$app->router()->post('/admin/homepage/slides/{id}/delete', [AdminController::class, 'homepageSlideDelete']);
 $app->router()->get('/admin/media', [AdminController::class, 'media']);
 $app->router()->post('/admin/media', [AdminController::class, 'mediaUpload']);
 $app->router()->post('/admin/media/{id}/delete', [AdminController::class, 'mediaDelete']);
