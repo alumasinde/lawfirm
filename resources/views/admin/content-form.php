@@ -94,6 +94,7 @@
                                         <button type="button" data-command="insertUnorderedList" title="Bullet list" aria-label="Bullet list">•</button>
                                         <button type="button" data-command="insertOrderedList" title="Numbered list" aria-label="Numbered list">1.</button>
                                         <button type="button" data-command="formatBlock" data-value="blockquote" title="Quote" aria-label="Quote">❝</button>
+                                    <button type="button" data-command="insertParagraph" title="New paragraph (Enter)" aria-label="New paragraph">↵</button>
                                     </div>
                                 <?php endif; ?>
                                 <div class="rich-editor__group">
@@ -106,7 +107,7 @@
                             <textarea id="field-<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" class="rich-editor__source" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" data-rich-source rows="<?= $name === 'excerpt' ? '4' : '12' ?>" placeholder="<?= $name === 'excerpt' ? 'Write a concise introduction…' : 'Start writing your content…' ?>"><?= htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') ?></textarea>
                             <div class="rich-editor__status" data-rich-status>Click into the editor and start typing.</div>
                         </div>
-                        <small class="admin-field__hint"><?= $name === 'excerpt' ? 'A short introduction for practice area cards and the page hero. Bold and italic formatting are supported.' : 'Click into the editor and write naturally. Formatting is saved automatically when you save the page.' ?></small>
+                        <small class="admin-field__hint"><?= $name === 'excerpt' ? 'A short introduction for practice area cards and the page hero. Bold and italic formatting are supported.' : 'Press Enter for a new paragraph and Shift + Enter for a simple line break. Formatting is saved when you save the page.' ?></small>
 
                     <?php elseif ($isText || $configuredType === 'textarea'): ?>
                         <textarea class="admin-rich-input" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" rows="8" maxlength="<?= $maxLength > 0 ? $maxLength : 10000 ?>" <?= $placeholder !== '' ? 'placeholder="' . htmlspecialchars($placeholder, ENT_QUOTES, 'UTF-8') . '"' : '' ?>><?= htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') ?></textarea>
@@ -173,6 +174,20 @@
                 source.value = canvas.innerHTML.trim();
                 if (status) status.textContent = 'Ready to save';
             };
+
+            canvas.addEventListener('keydown', function (event) {
+                if (event.key !== 'Enter') return;
+
+                // Shift + Enter keeps the current paragraph and inserts a simple line break.
+                if (event.shiftKey) {
+                    return;
+                }
+
+                // Use a real paragraph break consistently across browsers and after headings/lists.
+                event.preventDefault();
+                document.execCommand('insertParagraph', false, null);
+                sync();
+            });
 
             canvas.addEventListener('input', sync);
             canvas.addEventListener('blur', sync);
