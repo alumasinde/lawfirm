@@ -23,7 +23,7 @@ final class StyleLinker
     public function render(): string
     {
         $version = $this->version();
-        $output = $this->fontStyles() . $this->variables();
+        $output = $this->themeMeta() . $this->fontStyles() . $this->variables();
 
         foreach ($this->styles($version) as $style) {
             $href = '/css/' . rawurlencode($version) . '/' . rawurlencode($style);
@@ -31,6 +31,17 @@ final class StyleLinker
         }
 
         return $output;
+    }
+
+    private function themeMeta(): string
+    {
+        $color = trim((string) ($this->config['brand']['primary'] ?? ''));
+
+        if (!preg_match('/^#[0-9A-Fa-f]{6}$/', $color)) {
+            return '';
+        }
+
+        return '<meta name="theme-color" content="' . htmlspecialchars($color, ENT_QUOTES, 'UTF-8') . '">';
     }
 
     private function version(): string
