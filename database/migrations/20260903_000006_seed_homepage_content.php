@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-use PDO;
-
-return function (PDO $pdo): void {
+return function (\PDO $pdo): void {
     $sections = [
         ['hero', 'Trusted legal counsel. Practical representation.', 'Webi Wenani & Associates Advocates', 'Professional legal services built around clear advice, careful preparation and committed representation.', 'Book a Consultation', '/contact', 'Explore Our Services', '/practice-areas', 1, 10],
         ['about', 'A modern approach to trusted legal service.', 'About the Firm', 'We help clients navigate important legal decisions with practical advice and professional representation.', 'Learn About Us', '/about', null, null, 1, 20],

@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-use PDO;
-
-return function (PDO $pdo): void {
-    $pdo->exec('CREATE TABLE homepage_sections (
+return function (\PDO $pdo): void {
+    $pdo->exec('CREATE TABLE IF NOT EXISTS homepage_sections (
         id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
         section_key VARCHAR(100) NOT NULL,
         title VARCHAR(255) NULL,
@@ -23,7 +21,7 @@ return function (PDO $pdo): void {
         KEY homepage_sections_enabled_order (is_enabled, sort_order)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
 
-    $pdo->exec('CREATE TABLE homepage_slides (
+    $pdo->exec('CREATE TABLE IF NOT EXISTS homepage_slides (
         id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
         body TEXT NULL,
@@ -43,7 +41,7 @@ return function (PDO $pdo): void {
         CONSTRAINT homepage_slides_mobile_media_fk FOREIGN KEY (mobile_media_id) REFERENCES media(id) ON DELETE SET NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
 
-    $pdo->exec('CREATE TABLE practice_areas (
+    $pdo->exec('CREATE TABLE IF NOT EXISTS practice_areas (
         id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(180) NOT NULL,
         slug VARCHAR(190) NOT NULL,
@@ -59,7 +57,7 @@ return function (PDO $pdo): void {
         KEY practice_areas_featured_order (is_enabled, is_featured, sort_order)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
 
-    $pdo->exec('CREATE TABLE advocates (
+    $pdo->exec('CREATE TABLE IF NOT EXISTS advocates (
         id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
         first_name VARCHAR(100) NOT NULL,
         last_name VARCHAR(100) NOT NULL,
@@ -77,7 +75,7 @@ return function (PDO $pdo): void {
         CONSTRAINT advocates_photo_fk FOREIGN KEY (photo_media_id) REFERENCES media(id) ON DELETE SET NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
 
-    $pdo->exec('CREATE TABLE articles (
+    $pdo->exec('CREATE TABLE IF NOT EXISTS articles (
         id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
         slug VARCHAR(190) NOT NULL,

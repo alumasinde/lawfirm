@@ -3,9 +3,6 @@
 declare(strict_types=1);
 
 use App\Core\Database;
-use PDO;
-use RuntimeException;
-use Throwable;
 
 $rootPath = dirname(__DIR__);
 $app = require $rootPath . '/app/bootstrap.php';
@@ -23,7 +20,7 @@ $pdo->exec(
 
 $applied = $pdo->query(
     'SELECT migration FROM migrations'
-)->fetchAll(PDO::FETCH_COLUMN);
+)->fetchAll(\PDO::FETCH_COLUMN);
 
 $migrationsPath = __DIR__ . '/migrations';
 $files = glob($migrationsPath . '/*.php') ?: [];
@@ -51,14 +48,12 @@ foreach ($pending as $file) {
     $migration = require $file;
 
     if (!is_callable($migration)) {
-        throw new RuntimeException(
+        throw new \RuntimeException(
             'Migration must return a callable: ' . basename($file)
         );
     }
 
     $name = basename($file);
-
-    $pdo->beginTransaction();
 
     try {
         $migration($pdo);
@@ -73,14 +68,12 @@ foreach ($pending as $file) {
             'batch' => $batch,
         ]);
 
-        $pdo->commit();
-
         echo "Migrated: {$name}\n";
-    } catch (Throwable $exception) {
-        if ($pdo->inTransaction()) {
-            $pdo->rollBack();
-        }
-
-        throw $exception;
+    } catch (\Throwable $exception) {
+        throw new \RuntimeException(
+            'Migration failed: ' . $name . ' — ' . $exception->getMessage(),
+            0,
+            $exception
+        );
     }
 }

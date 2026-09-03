@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-use PDO;
-
-return function (PDO $pdo): void {
+return function (\PDO $pdo): void {
     $pdo->exec(
         'CREATE TABLE IF NOT EXISTS media (
             id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

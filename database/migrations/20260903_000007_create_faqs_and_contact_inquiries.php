@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-use PDO;
-
-return function (PDO $pdo): void {
-    $pdo->exec('CREATE TABLE faqs (
+return function (\PDO $pdo): void {
+    $pdo->exec('CREATE TABLE IF NOT EXISTS faqs (
         id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
         question VARCHAR(500) NOT NULL,
         answer LONGTEXT NOT NULL,
@@ -16,7 +14,7 @@ return function (PDO $pdo): void {
         KEY faqs_enabled_order (is_enabled, sort_order)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
 
-    $pdo->exec('CREATE TABLE contact_inquiries (
+    $pdo->exec('CREATE TABLE IF NOT EXISTS contact_inquiries (
         id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(180) NOT NULL,
         email VARCHAR(190) NULL,
