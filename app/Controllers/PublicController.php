@@ -94,7 +94,7 @@ final class PublicController extends Controller
         }
 
         return $this->view('public/detail', [
-            'title' => $area['name'],
+            'title' => $area['meta_title'] ?: $area['name'],
             'item' => $area,
             'type' => 'Practice Area',
         ]);
@@ -111,7 +111,7 @@ final class PublicController extends Controller
         $advocate['name'] = trim($advocate['first_name'] . ' ' . $advocate['last_name']);
 
         return $this->view('public/advocate', [
-            'title' => $advocate['name'],
+            'title' => $advocate['meta_title'] ?: $advocate['name'],
             'advocate' => $advocate,
         ]);
     }
@@ -125,7 +125,7 @@ final class PublicController extends Controller
         }
 
         return $this->view('public/detail', [
-            'title' => $article['title'],
+            'title' => $article['meta_title'] ?: $article['title'],
             'item' => $article,
             'type' => 'Insight',
         ]);
