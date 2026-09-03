@@ -172,7 +172,7 @@ final class AdminContentService
         // code as well as migrations so existing installations immediately receive
         // the rich editor even when their database has not yet run the config migration.
         if (($resource['resource_key'] ?? '') === 'practice-areas') {
-            foreach (['body', 'approach_body', 'cta_body'] as $field) {
+            foreach (['excerpt', 'body', 'approach_body', 'cta_body'] as $field) {
                 $existing = is_array($config[$field] ?? null) ? $config[$field] : [];
                 $config[$field] = [
                     ...$existing,
