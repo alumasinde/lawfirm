@@ -7,7 +7,7 @@ $app = require dirname(__DIR__) . '/app/bootstrap.php';
 require BASE_PATH . '/routes/web.php';
 
 try {
-    $response = $app->router()->dispatch(new App\Core\Request());
+    $response = $app->router()->dispatch(new App\Core\Request(), $app);
 
     if (is_string($response)) {
         echo $response;

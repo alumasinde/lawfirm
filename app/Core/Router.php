@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core;
+namespace AppCore;
 
 final class Router
 {
@@ -25,7 +25,7 @@ final class Router
         return $this;
     }
 
-    public function dispatch(Request $request): mixed
+    public function dispatch(Request $request, Application $app): mixed
     {
         $handler = $this->routes[$request->method()][$this->normalize($request->path())] ?? null;
 
@@ -34,9 +34,12 @@ final class Router
             return 'Not Found';
         }
 
-        return is_array($handler)
-            ? (new $handler[0])->{$handler[1]}($request)
-            : $handler($request);
+        if (is_array($handler)) {
+            $controller = new $handler[0]($app);
+            return $controller->{$handler[1]}($request);
+        }
+
+        return $handler($request);
     }
 
     private function normalize(string $path): string

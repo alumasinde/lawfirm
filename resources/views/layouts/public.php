@@ -11,13 +11,14 @@
 <a class="skip-link" href="#main-content">Skip to content</a>
 <header class="site-header">
     <div class="site-header__inner">
-        <a class="site-brand" href="/">Webi Wenani & Associates Advocates</a>
+        <a class="site-brand" href="/">Webi Wenani <span>& Associates Advocates</span></a>
         <nav class="site-nav" aria-label="Main navigation">
             <a href="/">Home</a>
             <a href="/about">About</a>
             <a href="/practice-areas">Practice Areas</a>
             <a href="/advocates">Advocates</a>
-            <a href="/contact">Contact</a>
+            <a href="/insights">Insights</a>
+            <a class="button button--primary site-nav__cta" href="/contact">Book a Consultation</a>
         </nav>
     </div>
 </header>
@@ -27,5 +28,6 @@
         <p>Webi Wenani & Associates Advocates</p>
     </div>
 </footer>
+<script src="/js/v1/homepage-carousel.js" defer></script>
 </body>
 </html>
