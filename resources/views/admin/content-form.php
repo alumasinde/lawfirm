@@ -32,7 +32,7 @@
                 $placeholder = (string) ($fieldConfig['placeholder'] ?? '');
                 $maxLength = isset($fieldConfig['maxlength']) ? (int) $fieldConfig['maxlength'] : 500;
                 ?>
-                <label class="<?= $isText ? 'admin-field admin-field--wide' : 'admin-field' ?>">
+                <label class="<?= ($isText || $configuredType === 'textarea') ? 'admin-field admin-field--wide' : 'admin-field' ?>">
                     <span><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></span>
                     <?php if ($configuredType === 'select' && $options !== []): ?>
                         <select name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>">
