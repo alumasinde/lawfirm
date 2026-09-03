@@ -81,3 +81,22 @@ It manages:
 - Calls to action
 - Overlay opacity
 - Slide visibility and display order
+
+
+## Practice Area Detail Content
+
+Each practice area now has its own database-driven detail content.
+
+From **Website management → Practice Areas → Details**, administrators can manage:
+
+- Overview copy through the existing Practice Area editor
+- Key Contacts linked to Advocate records
+- Individual Experience matters in display order
+- Recent Insights linked to Article records
+- Related Services linked to other Practice Areas
+
+The public practice area page resolves all of these relationships from the database. Advocate names, roles, emails, article titles and practice area URLs are not duplicated in the page content.
+
+After pulling this update, run:
+
+`php database/migrate.php`
