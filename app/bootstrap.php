@@ -6,6 +6,7 @@ use App\Core\Application;
 use App\Core\Config;
 use App\Core\Database;
 use App\Core\Router;
+use App\Core\Session;
 
 define('BASE_PATH', dirname(__DIR__));
 
@@ -27,6 +28,8 @@ spl_autoload_register(function (string $class): void {
 Config::load(BASE_PATH . '/.env');
 
 $config = require BASE_PATH . '/config/app.php';
+
+Session::configure((array) ($config['session'] ?? []));
 
 $app = new Application($config);
 $app->setRouter(new Router());
