@@ -5,4 +5,5 @@ return [
     'layout.css',
     'components.css',
     'homepage.css',
+    'public-pages.css',
 ];

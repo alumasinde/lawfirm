@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core;
+namespace AppCore;
 
 final class Request
 {
@@ -27,5 +27,10 @@ final class Request
     public function input(string $key, mixed $default = null): mixed
     {
         return $_POST[$key] ?? $default;
+    }
+
+    public function all(): array
+    {
+        return $_POST;
     }
 }

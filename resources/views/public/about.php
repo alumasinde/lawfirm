@@ -1,0 +1,1 @@
+<?php if ($section): ?><section class="page-hero"><div class="container"><p class="section-label"><?= htmlspecialchars($section['eyebrow'] ?? '', ENT_QUOTES, 'UTF-8') ?></p><h1><?= htmlspecialchars($section['title'], ENT_QUOTES, 'UTF-8') ?></h1><p class="lead"><?= htmlspecialchars($section['body'] ?? '', ENT_QUOTES, 'UTF-8') ?></p></div></section><?php endif; ?>

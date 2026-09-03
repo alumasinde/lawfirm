@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core;
+namespace AppCore;
 
 final class Response
 {
@@ -11,17 +11,9 @@ final class Response
         http_response_code($status);
     }
 
-    public static function redirect(string $url, int $status = 302): never
+    public static function redirect(string $url): never
     {
-        header('Location: ' . $url, true, $status);
-        exit;
-    }
-
-    public static function json(array $data, int $status = 200): never
-    {
-        http_response_code($status);
-        header('Content-Type: application/json; charset=UTF-8');
-        echo json_encode($data, JSON_THROW_ON_ERROR);
+        header('Location: ' . $url, true, 303);
         exit;
     }
 }

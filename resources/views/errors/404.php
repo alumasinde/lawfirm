@@ -1,0 +1,1 @@
+<section class="page-section"><div class="container article-detail"><p class="section-label">404</p><h1>Page not found</h1><p>The page you are looking for is unavailable or may have moved.</p><a class="button button--primary" href="/">Return Home</a></div></section>
