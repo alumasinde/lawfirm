@@ -46,6 +46,9 @@
                             <?php endforeach; ?>
                             <td class="admin-row-actions">
                                 <a href="/admin/content/<?= rawurlencode($resource['resource_key']) ?>/<?= (int) $row['id'] ?>/edit">Edit</a>
+                                <?php if (($resource['resource_key'] ?? '') === 'practice-areas'): ?>
+                                    <a href="/admin/practice-areas/<?= (int) $row['id'] ?>/details">Details</a>
+                                <?php endif; ?>
                                 <form method="post" action="/admin/content/<?= rawurlencode($resource['resource_key']) ?>/<?= (int) $row['id'] ?>/delete" onsubmit="return confirm('Delete this record?');">
                                     <input type="hidden" name="_token" value="<?= htmlspecialchars(\App\Core\Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
                                     <button type="submit">Delete</button>
