@@ -8,4 +8,5 @@ return [
     'public-pages.css',
     'practice-area-detail.css',
     'practice-editor.css',
+    'rich-editor.css',
 ];
