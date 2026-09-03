@@ -9,6 +9,11 @@
     </div>
 
     <div class="admin-resource-grid">
+        <article class="admin-resource-card">
+            <p class="admin-kicker">Media Library</p>
+            <p>Upload, reuse and safely manage images used across public website content.</p>
+            <a href="/admin/media">Manage Media Library →</a>
+        </article>
         <?php foreach ($resources as $resource): ?>
             <article class="admin-resource-card">
                 <p class="admin-kicker"><?= htmlspecialchars($resource['label'], ENT_QUOTES, 'UTF-8') ?></p>
