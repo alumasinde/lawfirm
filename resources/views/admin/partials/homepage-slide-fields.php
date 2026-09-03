@@ -1,4 +1,4 @@
-<input type="hidden" name="_token" value="<?= htmlspecialchars(AppCoreCsrf::token(), ENT_QUOTES, 'UTF-8') ?>">
+<input type="hidden" name="_token" value="<?= htmlspecialchars(\App\Core\Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
 <label class="admin-field admin-field--wide"><span>Title</span><input name="title" required value="<?= htmlspecialchars((string) $slide['title'], ENT_QUOTES, 'UTF-8') ?>"></label>
 <label class="admin-field admin-field--wide"><span>Description</span><textarea name="body" rows="5"><?= htmlspecialchars((string) $slide['body'], ENT_QUOTES, 'UTF-8') ?></textarea></label>
 <label class="admin-field"><span>Desktop image</span><select name="media_id"><option value="">No image selected</option><?php foreach ($mediaOptions as $media): ?><option value="<?= (int) $media['id'] ?>" <?= (string) $slide['media_id'] === (string) $media['id'] ? 'selected' : '' ?>>#<?= (int) $media['id'] ?> — <?= htmlspecialchars($media['filename'], ENT_QUOTES, 'UTF-8') ?></option><?php endforeach; ?></select></label>
