@@ -87,7 +87,10 @@ final class PublicRepository
             'SELECT a.*, m.path AS cover_path
              FROM articles a
              LEFT JOIN media m ON m.id = a.cover_media_id
-             WHERE a.is_enabled = 1 AND a.published_at IS NOT NULL
+             WHERE a.is_enabled = 1
+               AND a.status = "published"
+               AND a.published_at IS NOT NULL
+               AND a.published_at <= NOW()
              ORDER BY a.published_at DESC, a.id DESC'
         )->fetchAll();
     }
@@ -98,7 +101,11 @@ final class PublicRepository
             'SELECT a.*, m.path AS cover_path
              FROM articles a
              LEFT JOIN media m ON m.id = a.cover_media_id
-             WHERE a.slug = :slug AND a.is_enabled = 1 AND a.published_at IS NOT NULL
+             WHERE a.slug = :slug
+               AND a.is_enabled = 1
+               AND a.status = "published"
+               AND a.published_at IS NOT NULL
+               AND a.published_at <= NOW()
              LIMIT 1',
             ['slug' => $slug]
         )->fetch();
