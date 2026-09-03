@@ -13,7 +13,17 @@ return function (\PDO $pdo): void {
     ];
 
     $statement = $pdo->prepare('INSERT INTO homepage_sections (section_key, title, eyebrow, body, primary_label, primary_url, secondary_label, secondary_url, is_enabled, sort_order)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            title = VALUES(title),
+            eyebrow = VALUES(eyebrow),
+            body = VALUES(body),
+            primary_label = VALUES(primary_label),
+            primary_url = VALUES(primary_url),
+            secondary_label = VALUES(secondary_label),
+            secondary_url = VALUES(secondary_url),
+            is_enabled = VALUES(is_enabled),
+            sort_order = VALUES(sort_order)');
 
     foreach ($sections as $section) {
         $statement->execute($section);
@@ -26,10 +36,28 @@ return function (\PDO $pdo): void {
     ];
 
     $statement = $pdo->prepare('INSERT INTO homepage_slides (title, body, primary_label, primary_url, secondary_label, secondary_url, overlay_opacity, is_enabled, sort_order)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            body = VALUES(body),
+            primary_label = VALUES(primary_label),
+            primary_url = VALUES(primary_url),
+            secondary_label = VALUES(secondary_label),
+            secondary_url = VALUES(secondary_url),
+            overlay_opacity = VALUES(overlay_opacity),
+            is_enabled = VALUES(is_enabled),
+            sort_order = VALUES(sort_order)');
 
     foreach ($slides as $slide) {
-        $statement->execute($slide);
+        $existing = $pdo->prepare('SELECT id FROM homepage_slides WHERE title = ? LIMIT 1');
+        $existing->execute([$slide[0]]);
+
+        if ($existing->fetchColumn() !== false) {
+            $update = $pdo->prepare('UPDATE homepage_slides SET body = ?, primary_label = ?, primary_url = ?, secondary_label = ?, secondary_url = ?, overlay_opacity = ?, is_enabled = ?, sort_order = ? WHERE title = ?');
+            $update->execute([$slide[1], $slide[2], $slide[3], $slide[4], $slide[5], $slide[6], $slide[7], $slide[8], $slide[0]]);
+        } else {
+            $insert = $pdo->prepare('INSERT INTO homepage_slides (title, body, primary_label, primary_url, secondary_label, secondary_url, overlay_opacity, is_enabled, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+            $insert->execute($slide);
+        }
     }
 
     $practiceAreas = [
@@ -40,7 +68,14 @@ return function (\PDO $pdo): void {
     ];
 
     $statement = $pdo->prepare('INSERT INTO practice_areas (name, slug, excerpt, icon, is_featured, is_enabled, sort_order)
-        VALUES (?, ?, ?, ?, ?, ?, ?)');
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            name = VALUES(name),
+            excerpt = VALUES(excerpt),
+            icon = VALUES(icon),
+            is_featured = VALUES(is_featured),
+            is_enabled = VALUES(is_enabled),
+            sort_order = VALUES(sort_order)');
 
     foreach ($practiceAreas as $area) {
         $statement->execute($area);
@@ -51,7 +86,15 @@ return function (\PDO $pdo): void {
     ];
 
     $statement = $pdo->prepare('INSERT INTO advocates (first_name, last_name, slug, title, bio, is_featured, is_enabled, sort_order)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            first_name = VALUES(first_name),
+            last_name = VALUES(last_name),
+            title = VALUES(title),
+            bio = VALUES(bio),
+            is_featured = VALUES(is_featured),
+            is_enabled = VALUES(is_enabled),
+            sort_order = VALUES(sort_order)');
 
     foreach ($advocates as $advocate) {
         $statement->execute($advocate);
@@ -64,7 +107,13 @@ return function (\PDO $pdo): void {
     ];
 
     $statement = $pdo->prepare('INSERT INTO articles (title, slug, excerpt, body, published_at, is_featured, is_enabled)
-        VALUES (?, ?, ?, ?, NOW(), ?, ?)');
+        VALUES (?, ?, ?, ?, NOW(), ?, ?)
+        ON DUPLICATE KEY UPDATE
+            title = VALUES(title),
+            excerpt = VALUES(excerpt),
+            body = VALUES(body),
+            is_featured = VALUES(is_featured),
+            is_enabled = VALUES(is_enabled)');
 
     foreach ($articles as $article) {
         $statement->execute($article);
