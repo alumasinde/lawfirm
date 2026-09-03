@@ -28,7 +28,7 @@ $firmDescription = $identity['body'] ?? '';
         <div class="site-header__top">
             <div class="site-header__top-inner">
                 <?php if (!empty($topBar['title'])): ?><span><?= htmlspecialchars($topBar['title'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
-                <?php if (!empty($topBar['primary_label']) && !empty($topBar['primary_url'])): ?><a href="<?= htmlspecialchars($topBar['primary_url'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($topBar['primary_label'], ENT_QUOTES, 'UTF-8') ?> <span aria-hidden="true">→</span></a><?php endif; ?>
+                <?php if (!empty($topBar['primary_label']) && !empty($topBar['primary_url'])): ?><a href="<?= htmlspecialchars($topBar['primary_url'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($topBar['primary_label'], ENT_QUOTES, 'UTF-8') ?></a><?php endif; ?>
             </div>
         </div>
     <?php endif; ?>
