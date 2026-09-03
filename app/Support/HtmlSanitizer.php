@@ -78,6 +78,24 @@ final class HtmlSanitizer
                 continue;
             }
 
+            // Contenteditable in Chromium commonly uses DIV for Enter.
+            // Preserve that block boundary by converting it to our supported P tag
+            // instead of unwrapping it and joining adjacent lines together.
+            if ($tag === 'div') {
+                $paragraph = $child->ownerDocument?->createElement('p');
+
+                if ($paragraph !== null && $child->parentNode !== null) {
+                    while ($child->firstChild !== null) {
+                        $paragraph->appendChild($child->firstChild);
+                    }
+
+                    $child->parentNode->replaceChild($paragraph, $child);
+                    self::cleanAttributes($paragraph, 'p');
+                    self::cleanChildren($paragraph);
+                    continue;
+                }
+            }
+
             if (!in_array($tag, self::ALLOWED_TAGS, true)) {
                 self::cleanChildren($child);
                 self::unwrap($child);
