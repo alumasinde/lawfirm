@@ -52,3 +52,19 @@ After running migrations, the admin foundation provides a database-driven conten
 Run pending migrations after pulling updates:
 
 `php database/migrate.php`
+
+## Phase 7 content management
+
+Phase 7 adds a complete database-driven content layer for practice areas, advocates and legal insights, including publishing fields, SEO metadata and managed media relationships.
+
+The Media Library is available at `/admin/media`. Images are validated server-side, stored under `public/uploads/media/` and recorded in the `media` table. The CMS detects media fields dynamically by the `*_media_id` convention and exposes the library as a reusable selector.
+
+Media deletion is protected by database foreign-key usage checks, so images still referenced by advocates, articles or homepage slides cannot be removed.
+
+### Upload permissions
+
+The PHP process must be able to write to:
+
+`public/uploads/media/`
+
+Supported image formats are JPG, PNG, WEBP and GIF. The application currently limits individual uploads to 10 MB.
