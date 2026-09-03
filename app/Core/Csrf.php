@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AppCore;
+namespace App\Core;
 
 final class Csrf
 {

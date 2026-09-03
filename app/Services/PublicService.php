@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace AppServices;
+namespace App\Services;
 
-use AppRepositoriesPublicRepository;
+use App\Repositories\PublicRepository;
+use InvalidArgumentException;
 
 final class PublicService
 {
@@ -12,14 +13,45 @@ final class PublicService
     {
     }
 
-    public function sections(array $keys): array { return $this->repository->sections($keys); }
-    public function practiceAreas(): array { return $this->repository->practiceAreas(); }
-    public function practiceArea(string $slug): ?array { return $this->repository->practiceArea($slug); }
-    public function advocates(): array { return $this->repository->advocates(); }
-    public function advocate(string $slug): ?array { return $this->repository->advocate($slug); }
-    public function articles(): array { return $this->repository->articles(); }
-    public function article(string $slug): ?array { return $this->repository->article($slug); }
-    public function faqs(): array { return $this->repository->faqs(); }
+    public function sections(array $keys): array
+    {
+        return $this->repository->sections($keys);
+    }
+
+    public function practiceAreas(): array
+    {
+        return $this->repository->practiceAreas();
+    }
+
+    public function practiceArea(string $slug): ?array
+    {
+        return $this->repository->practiceArea($slug);
+    }
+
+    public function advocates(): array
+    {
+        return $this->repository->advocates();
+    }
+
+    public function advocate(string $slug): ?array
+    {
+        return $this->repository->advocate($slug);
+    }
+
+    public function articles(): array
+    {
+        return $this->repository->articles();
+    }
+
+    public function article(string $slug): ?array
+    {
+        return $this->repository->article($slug);
+    }
+
+    public function faqs(): array
+    {
+        return $this->repository->faqs();
+    }
 
     public function inquiry(array $input): array
     {
@@ -32,14 +64,22 @@ final class PublicService
         ];
 
         if ($data['name'] === '' || $data['message'] === '') {
-            throw new InvalidArgumentException('Please provide your name and enquiry message.');
+            throw new InvalidArgumentException(
+                'Please provide your name and enquiry message.'
+            );
         }
 
-        if ($data['email'] !== '' && filter_var($data['email'], FILTER_VALIDATE_EMAIL) === false) {
-            throw new InvalidArgumentException('Please provide a valid email address.');
+        if (
+            $data['email'] !== ''
+            && filter_var($data['email'], FILTER_VALIDATE_EMAIL) === false
+        ) {
+            throw new InvalidArgumentException(
+                'Please provide a valid email address.'
+            );
         }
 
         $this->repository->saveInquiry($data);
+
         return $data;
     }
 }

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace AppRepositories;
+namespace App\Repositories;
 
-use AppCoreDatabase;
+use App\Core\Database;
 
 final class HomepageRepository
 {

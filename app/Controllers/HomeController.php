@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace AppControllers;
+namespace App\Controllers;
 
-use AppCoreApplication;
-use AppCoreController;
-use AppCoreRequest;
-use AppRepositoriesHomepageRepository;
-use AppServicesHomepageService;
+use App\Core\Application;
+use App\Core\Controller;
+use App\Core\Request;
+use App\Repositories\HomepageRepository;
+use App\Services\HomepageService;
 
 final class HomeController extends Controller
 {

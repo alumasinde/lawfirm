@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace AppServices;
+namespace App\Services;
 
-use AppRepositoriesHomepageRepository;
+use App\Repositories\HomepageRepository;
 
 final class HomepageService
 {
