@@ -15,6 +15,7 @@ use App\Repositories\AdminContentRepository;
 use App\Repositories\AdminRepository;
 use App\Repositories\AdminMediaRepository;
 use App\Repositories\AdminHomepageRepository;
+use App\Repositories\PracticeAreaDetailRepository;
 use App\Services\AdminContentService;
 use App\Services\AdminMediaService;
 use App\Services\AdminService;
@@ -26,6 +27,7 @@ final class AdminController extends Controller
     private AdminContentService $content;
     private AdminMediaService $media;
     private AdminHomepageRepository $homepage;
+    private PracticeAreaDetailRepository $practiceAreaDetails;
     private array $sessionConfig;
     private array $authConfig;
 
@@ -34,6 +36,7 @@ final class AdminController extends Controller
         $this->service = new AdminService(new AdminRepository($app->database()));
         $this->content = new AdminContentService(new AdminContentRepository($app->database()));
         $this->homepage = new AdminHomepageRepository($app->database());
+        $this->practiceAreaDetails = new PracticeAreaDetailRepository($app->database());
         $this->media = new AdminMediaService(
             new AdminMediaRepository($app->database()),
             max(1, (int) $app->config('media.max_upload_bytes', 10485760))
@@ -219,6 +222,61 @@ final class AdminController extends Controller
         ]);
 
         Response::redirect('/admin/content/' . rawurlencode($resourceKey) . '?message=deleted');
+    }
+
+    public function practiceAreaDetails(Request $request, string $id): string
+    {
+        $user = $this->requireUser();
+        $areaId = $this->id($id);
+        $area = $this->practiceAreaDetails->adminArea($areaId);
+
+        if ($area === null) {
+            $this->notFound();
+        }
+
+        $details = $this->practiceAreaDetails->editorData($areaId);
+
+        return View::adminLayout('admin/practice-area-details', [
+            'title' => $area['name'] . ' Details',
+            'user' => $user,
+            'resources' => $this->content->resources(),
+            'area' => $area,
+            'details' => [
+                'contacts' => array_map('intval', $details['contacts']),
+                'experience' => $details['experience'],
+                'insights' => array_map('intval', $details['insights']),
+                'related' => array_map('intval', $details['related']),
+            ],
+            'advocates' => $this->practiceAreaDetails->advocates(),
+            'articles' => $this->practiceAreaDetails->articles(),
+            'areas' => $this->practiceAreaDetails->areasExcept($areaId),
+            'message' => $request->query('message'),
+            'error' => $request->query('error'),
+        ]);
+    }
+
+    public function practiceAreaDetailsUpdate(Request $request, string $id): never
+    {
+        $user = $this->requireUser();
+        $areaId = $this->id($id);
+        $this->validateToken($request);
+
+        if ($this->practiceAreaDetails->adminArea($areaId) === null) {
+            $this->notFound();
+        }
+
+        try {
+            $this->practiceAreaDetails->save($areaId, [
+                'contacts' => $request->input('contacts', []),
+                'experience' => $request->input('experience', []),
+                'insights' => $request->input('insights', []),
+                'related' => $request->input('related', []),
+            ]);
+            $this->service->audit((int) $user['id'], 'admin.practice_area.details.updated', ['id' => $areaId]);
+            Response::redirect('/admin/practice-areas/' . $areaId . '/details?message=updated');
+        } catch (InvalidArgumentException $exception) {
+            Response::redirect('/admin/practice-areas/' . $areaId . '/details?error=' . rawurlencode($exception->getMessage()));
+        }
     }
 
     public function homepage(Request $request): string
