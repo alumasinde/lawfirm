@@ -26,6 +26,10 @@
             <a class="admin-view-site" href="/admin/manage">Open management</a>
         </div>
         <div class="admin-quick-actions">
+            <a href="/admin/homepage">
+                <strong>Homepage Builder</strong>
+                <span>Manage homepage sections and hero slides in one place.</span>
+            </a>
             <a href="/admin/media">
                 <strong>Media Library</strong>
                 <span>Upload and reuse images across website content.</span>
