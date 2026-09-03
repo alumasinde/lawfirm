@@ -109,7 +109,7 @@ $renderRich = static function (mixed $value): string {
                         <?= $ctaBody !== '' ? $renderRich($ctaBody) : 'Every matter is different. Speak with our team about your circumstances, objectives and the legal support you require.' ?>
                     </div>
                 </div>
-                <a class="button button--primary" href="/contact">Discuss your matter <span aria-hidden="true">→</span></a>
+                <a class="button button--primary" href="/contact">Discuss your matter</a>
             </section>
         </main>
 
@@ -121,10 +121,19 @@ $renderRich = static function (mixed $value): string {
 
                     <?php foreach ($details['contacts'] as $contact): ?>
                         <?php $name = trim((string) $contact['first_name'] . ' ' . (string) $contact['last_name']); ?>
-                        <article>
-                            <h3><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></h3>
-                            <?php if (!empty($contact['title'])): ?><p><?= htmlspecialchars($contact['title'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
-                            <?php if (!empty($contact['email'])): ?><a href="mailto:<?= htmlspecialchars($contact['email'], ENT_QUOTES, 'UTF-8') ?>">Email <?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?> <span aria-hidden="true">→</span></a><?php endif; ?>
+                        <article class="practice-contact">
+                            <?php if (!empty($contact['photo_path'])): ?>
+                                <a class="practice-contact__photo" href="/advocates/<?= rawurlencode($contact['slug']) ?>" aria-label="View <?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>'s profile">
+                                    <img src="<?= htmlspecialchars($contact['photo_path'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" loading="lazy">
+                                </a>
+                            <?php else: ?>
+                                <span class="practice-contact__photo practice-contact__photo--placeholder" aria-hidden="true"><?= htmlspecialchars(strtoupper(substr((string) $contact['first_name'], 0, 1) . substr((string) $contact['last_name'], 0, 1)), ENT_QUOTES, 'UTF-8') ?></span>
+                            <?php endif; ?>
+                            <div class="practice-contact__content">
+                                <h3><a href="/advocates/<?= rawurlencode($contact['slug']) ?>"><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></a></h3>
+                                <?php if (!empty($contact['title'])): ?><p><?= htmlspecialchars($contact['title'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                <?php if (!empty($contact['email'])): ?><a class="practice-contact__email" href="mailto:<?= htmlspecialchars($contact['email'], ENT_QUOTES, 'UTF-8') ?>">Email</a><?php endif; ?>
+                            </div>
                         </article>
                     <?php endforeach; ?>
                 </section>
