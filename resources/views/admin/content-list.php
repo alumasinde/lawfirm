@@ -1,0 +1,69 @@
+<section class="admin-page">
+    <div class="admin-page__intro">
+        <div>
+            <p class="admin-kicker">Content management</p>
+            <h1><?= htmlspecialchars($resource['label'], ENT_QUOTES, 'UTF-8') ?></h1>
+            <p><?= htmlspecialchars((string) ($resource['description'] ?? ''), ENT_QUOTES, 'UTF-8') ?></p>
+        </div>
+        <a class="admin-primary-action" href="/admin/content/<?= rawurlencode($resource['resource_key']) ?>/create">Add new</a>
+    </div>
+
+    <?php if (!empty($message)): ?>
+        <div class="admin-notice" role="status">Changes were saved successfully.</div>
+    <?php endif; ?>
+
+    <section class="admin-panel">
+        <form class="admin-search" method="get">
+            <input type="search" name="q" value="<?= htmlspecialchars($listing['search'], ENT_QUOTES, 'UTF-8') ?>" placeholder="Search <?= htmlspecialchars($resource['label'], ENT_QUOTES, 'UTF-8') ?>">
+            <button type="submit">Search</button>
+            <?php if ($listing['search'] !== ''): ?>
+                <a href="/admin/content/<?= rawurlencode($resource['resource_key']) ?>">Clear</a>
+            <?php endif; ?>
+        </form>
+
+        <?php if ($listing['rows'] === []): ?>
+            <div class="admin-empty-state">
+                <h2>No records found</h2>
+                <p>Create the first record or adjust your search.</p>
+            </div>
+        <?php else: ?>
+            <div class="admin-table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <?php foreach ($resource['list_columns'] as $column): ?>
+                            <th><?= htmlspecialchars(ucwords(str_replace('_', ' ', $column)), ENT_QUOTES, 'UTF-8') ?></th>
+                        <?php endforeach; ?>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($listing['rows'] as $row): ?>
+                        <tr>
+                            <?php foreach ($resource['list_columns'] as $column): ?>
+                                <?php $value = $row[$column] ?? ''; ?>
+                                <td><?= htmlspecialchars(is_scalar($value) ? (string) $value : json_encode($value), ENT_QUOTES, 'UTF-8') ?></td>
+                            <?php endforeach; ?>
+                            <td class="admin-row-actions">
+                                <a href="/admin/content/<?= rawurlencode($resource['resource_key']) ?>/<?= (int) $row['id'] ?>/edit">Edit</a>
+                                <form method="post" action="/admin/content/<?= rawurlencode($resource['resource_key']) ?>/<?= (int) $row['id'] ?>/delete" onsubmit="return confirm('Delete this record?');">
+                                    <input type="hidden" name="_token" value="<?= htmlspecialchars(\App\Core\Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <?php if ($listing['pages'] > 1): ?>
+                <nav class="admin-pagination" aria-label="Pagination">
+                    <?php for ($page = 1; $page <= $listing['pages']; $page++): ?>
+                        <a class="<?= $page === $listing['page'] ? 'is-active' : '' ?>" href="/admin/content/<?= rawurlencode($resource['resource_key']) ?>?page=<?= $page ?>&q=<?= rawurlencode($listing['search']) ?>"><?= $page ?></a>
+                    <?php endfor; ?>
+                </nav>
+            <?php endif; ?>
+        <?php endif; ?>
+    </section>
+</section>
