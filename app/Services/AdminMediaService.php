@@ -26,6 +26,12 @@ final class AdminMediaService
     {
         $result = $this->repository->paginate(max(1, $page), 24, trim($search));
 
+        foreach ($result['rows'] as &$row) {
+            $row['usage'] = $this->repository->usages((int) $row['id']);
+            $row['usage_count'] = array_sum(array_column($row['usage'], 'count'));
+        }
+        unset($row);
+
         return [
             ...$result,
             'page' => max(1, $page),
