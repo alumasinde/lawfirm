@@ -98,7 +98,7 @@ final class PublicController extends Controller
 
         return $this->view('public/practice-area-detail', [
             'title' => $area['meta_title'] ?: $area['name'],
-            'metaDescription' => $area['meta_description'] ?: ($area['excerpt'] ?? ''),
+            'metaDescription' => $area['meta_description'] ?: trim(strip_tags((string) ($area['excerpt'] ?? ''))),
             'area' => $area,
             'details' => $this->practiceAreaDetails->publicDetails((int) $area['id']),
         ]);
