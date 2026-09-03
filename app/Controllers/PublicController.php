@@ -10,53 +10,77 @@ use App\Core\Csrf;
 use App\Core\Request;
 use App\Core\Response;
 use App\Repositories\PublicRepository;
+use App\Repositories\SiteRepository;
 use App\Services\PublicService;
+use App\Services\SiteService;
 use InvalidArgumentException;
 
 final class PublicController extends Controller
 {
     private PublicService $service;
+    private SiteService $site;
 
     public function __construct(Application $app)
     {
-        $this->service = new PublicService(
-            new PublicRepository($app->database())
-        );
+        $this->service = new PublicService(new PublicRepository($app->database()));
+        $this->site = new SiteService(new SiteRepository($app->database()));
+    }
+
+    protected function view(string $view, array $data = []): string
+    {
+        return parent::view($view, [
+            ...$this->site->layoutData(),
+            ...$data,
+        ]);
     }
 
     public function about(Request $request): string
     {
-        return $this->page('About the Firm', 'about');
+        return $this->page('about_page', 'About the Firm', 'about');
     }
 
     public function practiceAreas(Request $request): string
     {
+        $content = $this->site->content(['practice_areas_page']);
+
         return $this->view('public/practice-areas', [
-            'title' => 'Practice Areas',
+            'title' => $content['practice_areas_page']['meta_title'] ?? 'Practice Areas',
+            'page' => $content['practice_areas_page'] ?? null,
             'areas' => $this->service->practiceAreas(),
         ]);
     }
 
     public function advocates(Request $request): string
     {
+        $content = $this->site->content(['advocates_page']);
+
         return $this->view('public/advocates', [
-            'title' => 'Our Advocates',
+            'title' => $content['advocates_page']['meta_title'] ?? 'Our Advocates',
+            'page' => $content['advocates_page'] ?? null,
             'advocates' => $this->service->advocates(),
         ]);
     }
 
     public function insights(Request $request): string
     {
+        $content = $this->site->content(['insights_page', 'insights_more', 'article_fallback']);
+
         return $this->view('public/insights', [
-            'title' => 'Insights & Updates',
+            'title' => $content['insights_page']['meta_title'] ?? 'Insights & Updates',
+            'page' => $content['insights_page'] ?? null,
+            'more' => $content['insights_more'] ?? null,
+            'fallback' => $content['article_fallback'] ?? null,
             'articles' => $this->service->articles(),
         ]);
     }
 
     public function faq(Request $request): string
     {
+        $content = $this->site->content(['faq_page']);
+
         return $this->view('public/faq', [
-            'title' => 'Frequently Asked Questions',
+            'title' => $content['faq_page']['meta_title'] ?? 'Frequently Asked Questions',
+            'page' => $content['faq_page'] ?? null,
             'faqs' => $this->service->faqs(),
         ]);
     }
@@ -109,8 +133,12 @@ final class PublicController extends Controller
 
     public function contact(Request $request): string
     {
+        $content = $this->site->content(['contact_page', 'contact_details']);
+
         return $this->view('public/contact', [
-            'title' => 'Contact Us',
+            'title' => $content['contact_page']['meta_title'] ?? 'Contact Us',
+            'page' => $content['contact_page'] ?? null,
+            'details' => $content['contact_details'] ?? null,
             'csrfToken' => Csrf::token(),
             'status' => $request->query('status'),
         ]);
@@ -132,12 +160,15 @@ final class PublicController extends Controller
         Response::redirect('/contact?status=success');
     }
 
-    private function page(string $title, string $sectionKey): string
+    private function page(string $contentKey, string $fallbackTitle, string $sectionKey): string
     {
+        $content = $this->site->content([$contentKey]);
+        $page = $content[$contentKey] ?? null;
         $sections = $this->service->sections([$sectionKey]);
 
         return $this->view('public/about', [
-            'title' => $title,
+            'title' => $page['meta_title'] ?? $fallbackTitle,
+            'page' => $page,
             'section' => $sections[$sectionKey] ?? null,
         ]);
     }
