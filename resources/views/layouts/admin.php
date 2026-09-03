@@ -1,6 +1,7 @@
 <?php
 $title = $title ?? 'Administrator';
 $user = $user ?? null;
+$resources = $resources ?? [];
 ?>
 <!doctype html>
 <html lang="en">
@@ -16,6 +17,7 @@ $user = $user ?? null;
 <header class="admin-topbar">
     <a href="/admin" class="admin-brand">Webi Wenani <span>Administration</span></a>
     <div class="admin-user">
+        <a href="/" target="_blank" rel="noopener">View site</a>
         <span><?= htmlspecialchars($user['name'], ENT_QUOTES, 'UTF-8') ?></span>
         <form method="post" action="/admin/logout">
             <input type="hidden" name="_token" value="<?= htmlspecialchars(\App\Core\Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
@@ -23,7 +25,18 @@ $user = $user ?? null;
         </form>
     </div>
 </header>
+<div class="admin-workspace">
+    <aside class="admin-sidebar" aria-label="Administration navigation">
+        <a class="admin-nav-link" href="/admin">Overview</a>
+        <a class="admin-nav-link" href="/admin/manage">Website management</a>
+        <?php foreach ($resources as $resource): ?>
+            <a class="admin-nav-link" href="/admin/content/<?= rawurlencode($resource['resource_key']) ?>"><?= htmlspecialchars($resource['label'], ENT_QUOTES, 'UTF-8') ?></a>
+        <?php endforeach; ?>
+    </aside>
+    <main class="admin-main"><?= $content ?></main>
+</div>
+<?php else: ?>
+<main class="admin-auth"><?= $content ?></main>
 <?php endif; ?>
-<main class="<?= $user === null ? 'admin-auth' : 'admin-main' ?>"><?= $content ?></main>
 </body>
 </html>
