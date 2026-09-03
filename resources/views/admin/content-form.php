@@ -141,6 +141,33 @@
 
 <script>
 (function () {
+    function canonicalHtml(canvas) {
+        const copy = canvas.cloneNode(true);
+
+        // Browsers such as Chrome may create DIVs for Enter inside contenteditable.
+        // The public rich-content sanitizer intentionally does not allow DIV, so
+        // convert browser-created blocks to supported paragraphs before saving.
+        copy.querySelectorAll('div').forEach(function (div) {
+            const paragraph = document.createElement('p');
+            while (div.firstChild) {
+                paragraph.appendChild(div.firstChild);
+            }
+            div.replaceWith(paragraph);
+        });
+
+        // Direct text nodes can happen when pasting or editing legacy plain text.
+        // Wrap meaningful direct text in paragraphs so block separation survives save.
+        Array.from(copy.childNodes).forEach(function (node) {
+            if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '') {
+                const paragraph = document.createElement('p');
+                paragraph.textContent = node.textContent;
+                node.replaceWith(paragraph);
+            }
+        });
+
+        return copy.innerHTML.trim();
+    }
+
     function bootRichEditors() {
         document.querySelectorAll('[data-rich-editor]').forEach(function (editor) {
             const canvas = editor.querySelector('[data-rich-canvas]');
@@ -154,7 +181,7 @@
 
             if (initialValue.trim() !== '' && !hasHtml) {
                 canvas.innerHTML = initialValue
-                    .trim()
+                    .replace(/\r\n/g, '\n')
                     .split(/\n\s*\n/)
                     .map(function (paragraph) {
                         return '<p>' + paragraph
@@ -171,24 +198,12 @@
             editor.classList.add('is-enhanced');
 
             const sync = function () {
-                source.value = canvas.innerHTML.trim();
+                source.value = canonicalHtml(canvas);
                 if (status) status.textContent = 'Ready to save';
             };
 
-            canvas.addEventListener('keydown', function (event) {
-                if (event.key !== 'Enter') return;
-
-                // Shift + Enter keeps the current paragraph and inserts a simple line break.
-                if (event.shiftKey) {
-                    return;
-                }
-
-                // Use a real paragraph break consistently across browsers and after headings/lists.
-                event.preventDefault();
-                document.execCommand('insertParagraph', false, null);
-                sync();
-            });
-
+            // Do not intercept Enter. Native contenteditable handling is required
+            // for reliable caret movement and new lines across Chrome, Edge and Firefox.
             canvas.addEventListener('input', sync);
             canvas.addEventListener('blur', sync);
             canvas.addEventListener('focus', function () {
