@@ -13,7 +13,9 @@ use App\Core\Response;
 use App\Core\View;
 use App\Repositories\AdminContentRepository;
 use App\Repositories\AdminRepository;
+use App\Repositories\AdminMediaRepository;
 use App\Services\AdminContentService;
+use App\Services\AdminMediaService;
 use App\Services\AdminService;
 use InvalidArgumentException;
 
@@ -21,6 +23,7 @@ final class AdminController extends Controller
 {
     private AdminService $service;
     private AdminContentService $content;
+    private AdminMediaService $media;
     private array $sessionConfig;
     private array $authConfig;
 
@@ -28,6 +31,7 @@ final class AdminController extends Controller
     {
         $this->service = new AdminService(new AdminRepository($app->database()));
         $this->content = new AdminContentService(new AdminContentRepository($app->database()));
+        $this->media = new AdminMediaService(new AdminMediaRepository($app->database()));
         $this->sessionConfig = (array) $app->config('session', []);
         $this->authConfig = (array) $app->config('auth', []);
     }
@@ -127,6 +131,7 @@ final class AdminController extends Controller
             'resource' => $resource,
             'fields' => $this->content->fields($resource),
             'record' => [],
+            'mediaOptions' => $this->media->options(),
             'error' => $request->query('error'),
             'action' => '/admin/content/' . rawurlencode($resourceKey),
             'submitLabel' => 'Create',
@@ -168,6 +173,7 @@ final class AdminController extends Controller
             'resource' => $resource,
             'fields' => $this->content->fields($resource),
             'record' => $record,
+            'mediaOptions' => $this->media->options(),
             'action' => '/admin/content/' . rawurlencode($resourceKey) . '/' . (int) $id,
             'submitLabel' => 'Save changes',
             'error' => $request->query('error'),
@@ -207,6 +213,58 @@ final class AdminController extends Controller
         ]);
 
         Response::redirect('/admin/content/' . rawurlencode($resourceKey) . '?message=deleted');
+    }
+
+    public function media(Request $request): string
+    {
+        $user = $this->requireUser();
+
+        return View::adminLayout('admin/media', [
+            'title' => 'Media Library',
+            'user' => $user,
+            'resources' => $this->content->resources(),
+            'listing' => $this->media->list(
+                max(1, (int) $request->query('page', 1)),
+                (string) $request->query('q', '')
+            ),
+            'message' => $request->query('message'),
+            'error' => $request->query('error'),
+        ]);
+    }
+
+    public function mediaUpload(Request $request): never
+    {
+        $user = $this->requireUser();
+        $this->validateToken($request);
+
+        try {
+            $file = $request->file('image');
+
+            if ($file === null) {
+                throw new InvalidArgumentException('Choose an image to upload.');
+            }
+
+            $id = $this->media->upload($file, (string) $request->input('alt_text'));
+            $this->service->audit((int) $user['id'], 'admin.media.uploaded', ['id' => $id]);
+            Response::redirect('/admin/media?message=uploaded');
+        } catch (InvalidArgumentException $exception) {
+            Response::redirect('/admin/media?error=' . rawurlencode($exception->getMessage()));
+        }
+    }
+
+    public function mediaDelete(Request $request, string $id): never
+    {
+        $user = $this->requireUser();
+        $mediaId = $this->id($id);
+        $this->validateToken($request);
+
+        try {
+            $this->media->delete($mediaId);
+            $this->service->audit((int) $user['id'], 'admin.media.deleted', ['id' => $mediaId]);
+            Response::redirect('/admin/media?message=deleted');
+        } catch (InvalidArgumentException $exception) {
+            Response::redirect('/admin/media?error=' . rawurlencode($exception->getMessage()));
+        }
     }
 
     public function logout(Request $request): never
