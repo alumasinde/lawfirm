@@ -22,7 +22,7 @@
     </div>
 
     <form class="admin-editor practice-detail-editor" method="post" action="/admin/practice-areas/<?= (int) $area['id'] ?>/details">
-        <input type="hidden" name="_token" value="<?= htmlspecialchars(AppCoreCsrf::token(), ENT_QUOTES, 'UTF-8') ?>">
+        <input type="hidden" name="_token" value="<?= htmlspecialchars(\\App\\Core\\Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
 
         <section class="admin-detail-section" id="contacts">
             <div class="practice-editor-copy">
