@@ -49,6 +49,11 @@ final class AdminService
         ];
     }
 
+    public function audit(int $userId, string $event, array $context = []): void
+    {
+        $this->repository->audit($userId, $event, $context);
+    }
+
     public function auditLogout(?int $userId): void
     {
         $this->repository->audit($userId, 'admin.logout');
