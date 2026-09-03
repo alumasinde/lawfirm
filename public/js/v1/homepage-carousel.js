@@ -1,6 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const navToggle = document.querySelector('[data-nav-toggle]');
     const nav = document.querySelector('[data-site-nav]');
+    const header = document.querySelector('.site-header');
+
+    const syncHeader = () => header?.classList.toggle('is-scrolled', window.scrollY > 8);
+    syncHeader();
+    window.addEventListener('scroll', syncHeader, { passive: true });
 
     navToggle?.addEventListener('click', () => {
         const open = nav?.classList.toggle('is-open') ?? false;
@@ -8,13 +13,25 @@ document.addEventListener('DOMContentLoaded', () => {
         navToggle.textContent = open ? '×' : '☰';
     });
 
-    nav?.querySelectorAll('a').forEach((link) => {
-        link.addEventListener('click', () => {
-            nav.classList.remove('is-open');
-            navToggle?.setAttribute('aria-expanded', 'false');
-            if (navToggle) navToggle.textContent = '☰';
-        });
-    });
+    nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
+        nav.classList.remove('is-open');
+        navToggle?.setAttribute('aria-expanded', 'false');
+        if (navToggle) navToggle.textContent = '☰';
+    }));
+
+    const revealItems = [...document.querySelectorAll('.page-section, .consultation-cta, .page-hero')];
+    revealItems.forEach((item) => item.classList.add('reveal'));
+    if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+        revealItems.forEach((item) => observer.observe(item));
+    } else revealItems.forEach((item) => item.classList.add('is-visible'));
 
     const carousel = document.querySelector('[data-carousel]');
     if (!carousel) return;
@@ -45,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const stop = () => window.clearInterval(timer);
     const restart = () => {
         stop();
-        if (!reducedMotion) timer = window.setInterval(() => show(current + 1), 7000);
+        if (!reducedMotion) timer = window.setInterval(() => show(current + 1), 6500);
     };
 
     previous?.addEventListener('click', () => { show(current - 1); restart(); });
