@@ -18,7 +18,7 @@ final class AdminContentService
     {
         return array_map(function (array $resource): array {
             $resource['list_columns'] = $this->decodeColumns($resource['list_columns_json'] ?? '[]');
-            $resource['field_config'] = $this->decodeConfig($resource['field_config_json'] ?? '{}');
+            $resource['field_config'] = $this->fieldConfig($resource);
 
             return $resource;
         }, $this->repository->resources());
@@ -33,7 +33,7 @@ final class AdminContentService
         }
 
         $resource['list_columns'] = $this->decodeColumns($resource['list_columns_json'] ?? '[]');
-        $resource['field_config'] = $this->decodeConfig($resource['field_config_json'] ?? '{}');
+        $resource['field_config'] = $this->fieldConfig($resource);
 
         return $resource;
     }
@@ -162,6 +162,26 @@ final class AdminContentService
                 );
             }
         }
+    }
+
+    private function fieldConfig(array $resource): array
+    {
+        $config = $this->decodeConfig($resource['field_config_json'] ?? '{}');
+
+        // Practice areas always support editorial formatting. This is enforced in
+        // code as well as migrations so existing installations immediately receive
+        // the rich editor even when their database has not yet run the config migration.
+        if (($resource['resource_key'] ?? '') === 'practice-areas') {
+            foreach (['body', 'approach_body', 'cta_body'] as $field) {
+                $existing = is_array($config[$field] ?? null) ? $config[$field] : [];
+                $config[$field] = [
+                    ...$existing,
+                    'type' => 'richtext',
+                ];
+            }
+        }
+
+        return $config;
     }
 
     private function decodeColumns(string $json): array
