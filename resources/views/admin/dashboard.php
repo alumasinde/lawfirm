@@ -17,6 +17,24 @@
         <?php endforeach; ?>
     </div>
 
+    <section class="admin-panel admin-panel--compact">
+        <div class="admin-panel__header">
+            <div>
+                <p class="admin-kicker">Quick actions</p>
+                <h2>Manage the website</h2>
+            </div>
+            <a class="admin-view-site" href="/admin/manage">Open management</a>
+        </div>
+        <div class="admin-quick-actions">
+            <?php foreach ($resources as $resource): ?>
+                <a href="/admin/content/<?= rawurlencode($resource['resource_key']) ?>">
+                    <strong><?= htmlspecialchars($resource['label'], ENT_QUOTES, 'UTF-8') ?></strong>
+                    <span><?= htmlspecialchars((string) ($resource['description'] ?? ''), ENT_QUOTES, 'UTF-8') ?></span>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </section>
+
     <section class="admin-panel">
         <div class="admin-panel__header">
             <div>
