@@ -80,6 +80,45 @@ final class AdminContentRepository
         return ['rows' => $rows, 'total' => $count, 'columns' => $columns];
     }
 
+    public function uniqueColumns(array $resource): array
+    {
+        $table = $this->identifier((string) $resource['table_name']);
+        $rows = $this->database->statement('SHOW INDEX FROM `' . $table . '` WHERE Non_unique = 0')->fetchAll();
+        $groups = [];
+
+        foreach ($rows as $row) {
+            $key = (string) $row['Key_name'];
+            $groups[$key][] = (string) $row['Column_name'];
+        }
+
+        $columns = [];
+
+        foreach ($groups as $key => $group) {
+            if ($key !== 'PRIMARY' && count($group) === 1) {
+                $columns[] = $group[0];
+            }
+        }
+
+        return array_values(array_unique($columns));
+    }
+
+    public function existsValue(array $resource, string $column, mixed $value, ?int $exceptId = null): bool
+    {
+        $table = $this->identifier((string) $resource['table_name']);
+        $column = $this->identifier($column);
+        $sql = 'SELECT 1 FROM `' . $table . '` WHERE `' . $column . '` = :value';
+        $params = ['value' => $value];
+
+        if ($exceptId !== null) {
+            $sql .= ' AND id != :id';
+            $params['id'] = $exceptId;
+        }
+
+        $sql .= ' LIMIT 1';
+
+        return $this->database->statement($sql, $params)->fetchColumn() !== false;
+    }
+
     public function find(array $resource, int $id): ?array
     {
         $table = $this->identifier((string) $resource['table_name']);
