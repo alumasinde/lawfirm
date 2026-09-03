@@ -20,7 +20,7 @@ return static function (PDO $pdo): void {
         }
     }
 
-    foreach (['body', 'approach_body', 'cta_body'] as $field) {
+    foreach (['excerpt', 'body', 'approach_body', 'cta_body'] as $field) {
         $config[$field] = [
             ...((array) ($config[$field] ?? [])),
             'type' => 'richtext',
