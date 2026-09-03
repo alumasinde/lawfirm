@@ -29,6 +29,7 @@ $resources = $resources ?? [];
     <aside class="admin-sidebar" aria-label="Administration navigation">
         <a class="admin-nav-link" href="/admin">Overview</a>
         <a class="admin-nav-link" href="/admin/manage">Website management</a>
+        <a class="admin-nav-link" href="/admin/media">Media Library</a>
         <?php foreach ($resources as $resource): ?>
             <a class="admin-nav-link" href="/admin/content/<?= rawurlencode($resource['resource_key']) ?>"><?= htmlspecialchars($resource['label'], ENT_QUOTES, 'UTF-8') ?></a>
         <?php endforeach; ?>
