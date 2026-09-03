@@ -30,6 +30,8 @@ final class View
         $styleLinker = (new StyleLinker())->render();
         $title = $data['title'] ?? 'Webi Wenani & Associates Advocates';
 
+        extract($data, EXTR_SKIP);
+
         ob_start();
         require BASE_PATH . '/resources/views/layouts/public.php';
 
