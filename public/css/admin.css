@@ -21,3 +21,19 @@
 
 /* Rich editor paragraph and line-break controls */
 .rich-editor__toolbar button[data-command="insertParagraph"]{font-size:1.15rem;font-weight:700}.rich-editor__canvas p:empty{min-height:1.85em}.rich-editor__canvas h2+p,.rich-editor__canvas h3+p{margin-top:.7em}.rich-editor__canvas p+p{margin-top:.9em}.rich-editor__status::before{content:"";width:7px;height:7px;border-radius:50%;background:#8ca097;margin-right:7px;flex:none}.rich-editor:focus-within .rich-editor__status::before{background:#b28a4d}
+
+
+/* Practice area list actions: keep every action inside its own column and prevent text overlap */
+.admin-row-actions--practice{min-width:560px!important;padding-right:0!important}
+.practice-row-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;width:100%;align-items:stretch}
+.practice-row-action,.practice-row-delete{min-width:0!important;width:100%;margin:0}
+.practice-row-action{display:grid!important;grid-template-columns:36px minmax(0,1fr)!important;align-items:center;gap:10px!important;padding:12px 13px!important;min-height:72px}
+.practice-row-action>span:last-child,.practice-row-delete button>span:last-child{min-width:0}
+.practice-row-action strong,.practice-row-action small,.practice-row-delete strong,.practice-row-delete small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:normal}
+.practice-row-action strong,.practice-row-delete strong{font-size:.82rem!important;line-height:1.25}
+.practice-row-action small,.practice-row-delete small{margin-top:3px;font-size:.7rem!important;line-height:1.3}
+.practice-row-delete{display:block}
+.practice-row-delete button{display:grid!important;grid-template-columns:36px minmax(0,1fr)!important;align-items:center;gap:10px;width:100%;min-height:72px;padding:12px 13px!important;border:1px solid #ead9d3!important;border-radius:9px!important;background:#fffafa!important;color:#8b3f34!important;text-align:left}
+.practice-row-delete button:hover{border-color:#c98172!important;background:#fff7f5!important;box-shadow:0 6px 16px rgba(139,63,52,.08)}
+.practice-row-delete .practice-row-action__icon{background:#f8e8e4;color:#9a493b}
+@media(max-width:1050px){.admin-row-actions--practice{min-width:500px!important}.practice-row-actions{grid-template-columns:repeat(3,minmax(150px,1fr))!important}}
