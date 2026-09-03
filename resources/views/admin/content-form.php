@@ -26,10 +26,21 @@
                 $isText = preg_match('/text|json/', $type) === 1;
                 $isDateTime = str_contains($type, 'datetime') || str_contains($type, 'timestamp');
                 $isMedia = str_ends_with($name, '_media_id');
+                $fieldConfig = $resource['field_config'][$name] ?? [];
+                $configuredType = (string) ($fieldConfig['type'] ?? '');
+                $options = is_array($fieldConfig['options'] ?? null) ? $fieldConfig['options'] : [];
+                $placeholder = (string) ($fieldConfig['placeholder'] ?? '');
+                $maxLength = isset($fieldConfig['maxlength']) ? (int) $fieldConfig['maxlength'] : 500;
                 ?>
                 <label class="<?= $isText ? 'admin-field admin-field--wide' : 'admin-field' ?>">
                     <span><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></span>
-                    <?php if ($isMedia): ?>
+                    <?php if ($configuredType === 'select' && $options !== []): ?>
+                        <select name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>">
+                            <?php foreach ($options as $optionValue => $optionLabel): ?>
+                                <option value="<?= htmlspecialchars((string) $optionValue, ENT_QUOTES, 'UTF-8') ?>" <?= (string) $value === (string) $optionValue ? 'selected' : '' ?>><?= htmlspecialchars((string) $optionLabel, ENT_QUOTES, 'UTF-8') ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    <?php elseif ($isMedia): ?>
                         <select name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>">
                             <option value="">No image selected</option>
                             <?php foreach (($mediaOptions ?? []) as $media): ?>
@@ -42,14 +53,14 @@
                     <?php elseif ($isBoolean): ?>
                         <input type="hidden" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" value="0">
                         <input type="checkbox" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" value="1" <?= (int) $value === 1 ? 'checked' : '' ?>>
-                    <?php elseif ($isText): ?>
-                        <textarea name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" rows="8"><?= htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') ?></textarea>
+                    <?php elseif ($isText || $configuredType === 'textarea'): ?>
+                        <textarea name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" rows="8" maxlength="<?= $maxLength > 0 ? $maxLength : 10000 ?>"><?= htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') ?></textarea>
                     <?php elseif ($isDateTime): ?>
                         <input type="datetime-local" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" value="<?= htmlspecialchars($value ? date('Y-m-d\TH:i', strtotime((string) $value)) : '', ENT_QUOTES, 'UTF-8') ?>">
                     <?php elseif (preg_match('/int|decimal|float|double/', $type) === 1): ?>
                         <input type="number" step="any" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" value="<?= htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') ?>">
                     <?php else: ?>
-                        <input type="text" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" value="<?= htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') ?>" maxlength="500">
+                        <input type="<?= in_array($configuredType, ['email', 'tel', 'url', 'text'], true) ? htmlspecialchars($configuredType, ENT_QUOTES, 'UTF-8') : 'text' ?>" name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" value="<?= htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') ?>" maxlength="<?= $maxLength > 0 ? $maxLength : 500 ?>" <?= $placeholder !== '' ? 'placeholder="' . htmlspecialchars($placeholder, ENT_QUOTES, 'UTF-8') . '"' : '' ?>>
                     <?php endif; ?>
                 </label>
             <?php endforeach; ?>
