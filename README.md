@@ -68,3 +68,16 @@ The PHP process must be able to write to:
 `public/uploads/media/`
 
 Supported image formats are JPG, PNG, WEBP and GIF. The application currently limits individual uploads to 10 MB.
+
+## Homepage Builder
+
+The Homepage Builder is available from **Website management** and the dashboard. It keeps homepage administration separate from the main sidebar to avoid clutter.
+
+It manages:
+
+- Homepage section copy and visibility
+- Hero slide content
+- Desktop and mobile slide images from the Media Library
+- Calls to action
+- Overlay opacity
+- Slide visibility and display order
