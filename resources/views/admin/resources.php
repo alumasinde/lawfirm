@@ -10,6 +10,11 @@
 
     <div class="admin-resource-grid">
         <article class="admin-resource-card">
+            <p class="admin-kicker">Homepage</p>
+            <p>Control homepage sections and hero slides from one focused builder.</p>
+            <a href="/admin/homepage">Open Homepage Builder →</a>
+        </article>
+        <article class="admin-resource-card">
             <p class="admin-kicker">Media Library</p>
             <p>Upload, reuse and safely manage images used across public website content.</p>
             <a href="/admin/media">Manage Media Library →</a>
