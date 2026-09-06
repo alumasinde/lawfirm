@@ -42,6 +42,13 @@ final class HomepageService
                     $slide[$field] = null;
                 }
             }
+
+            // A mobile image should still be usable if an older slide record has no
+            // desktop media_id. This prevents a valid image from being hidden behind
+            // the hero fallback while the record is being corrected in admin.
+            if ($slide['image_path'] === null && $slide['mobile_image_path'] !== null) {
+                $slide['image_path'] = $slide['mobile_image_path'];
+            }
         }
         unset($slide);
 
