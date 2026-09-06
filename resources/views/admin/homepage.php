@@ -39,9 +39,9 @@
         </div>
     </section>
 
-    <section class="admin-panel">
+    <section class="admin-panel" id="slides">
         <div class="admin-panel__header">
-            <div><p class="admin-kicker">Hero</p><h2>Homepage slides</h2></div>
+            <div><p class="admin-kicker">Hero</p><h2>Homepage slides</h2><p class="admin-panel__helper">After saving, the selected Media ID below is read back from the database so a failed image update cannot appear as a false success.</p></div>
             <a href="/admin/media">Open Media Library</a>
         </div>
 
@@ -55,7 +55,7 @@
                             <?php else: ?>
                                 <span class="homepage-slide-summary__missing">No image</span>
                             <?php endif; ?>
-                            <span><strong><?= htmlspecialchars($slide['title'], ENT_QUOTES, 'UTF-8') ?></strong><small>Order <?= (int) $slide['sort_order'] ?> · Media #<?= (int) ($slide['media_id'] ?? 0) ?></small></span>
+                            <span><strong><?= htmlspecialchars($slide['title'], ENT_QUOTES, 'UTF-8') ?></strong><small>Order <?= (int) $slide['sort_order'] ?> · Desktop Media #<?= (int) ($slide['media_id'] ?? 0) ?><?= !empty($slide['image_filename']) ? ' · ' . htmlspecialchars((string) $slide['image_filename'], ENT_QUOTES, 'UTF-8') : '' ?></small></span>
                         </span>
                         <span><?= (int) $slide['is_enabled'] === 1 ? 'Live' : 'Hidden' ?></span>
                     </summary>
