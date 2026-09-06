@@ -66,38 +66,63 @@ final class AdminMediaRepository
 
     public function usages(int $id): array
     {
+        return $this->usageMap([$id])[$id] ?? [];
+    }
+
+    public function usageMap(array $ids): array
+    {
+        $ids = array_values(array_unique(array_filter(
+            array_map(static fn (mixed $id): int => (int) $id, $ids),
+            static fn (int $id): bool => $id > 0
+        )));
+
+        if ($ids === []) {
+            return [];
+        }
+
+        $usage = array_fill_keys($ids, []);
+
         try {
-        $references = $this->database->statement(
-            'SELECT TABLE_NAME, COLUMN_NAME
-             FROM information_schema.KEY_COLUMN_USAGE
-             WHERE TABLE_SCHEMA = DATABASE()
-               AND REFERENCED_TABLE_NAME = "media"
-               AND REFERENCED_COLUMN_NAME = "id"'
-        )->fetchAll();
+            $references = $this->database->statement(
+                'SELECT TABLE_NAME, COLUMN_NAME
+                 FROM information_schema.KEY_COLUMN_USAGE
+                 WHERE TABLE_SCHEMA = DATABASE()
+                   AND REFERENCED_TABLE_NAME = "media"
+                   AND REFERENCED_COLUMN_NAME = "id"'
+            )->fetchAll();
 
-        $usage = [];
+            $placeholders = implode(', ', array_fill(0, count($ids), '?'));
 
-        foreach ($references as $reference) {
-            $table = $this->identifier((string) $reference['TABLE_NAME']);
-            $column = $this->identifier((string) $reference['COLUMN_NAME']);
-            $count = (int) $this->database->statement(
-                'SELECT COUNT(*) FROM `' . $table . '` WHERE `' . $column . '` = :id',
-                ['id' => $id]
-            )->fetchColumn();
+            foreach ($references as $reference) {
+                $table = $this->identifier((string) $reference['TABLE_NAME']);
+                $column = $this->identifier((string) $reference['COLUMN_NAME']);
 
-            if ($count > 0) {
-                $usage[] = [
-                    'table' => $table,
-                    'column' => $column,
-                    'count' => $count,
-                ];
+                $rows = $this->database->pdo()->prepare(
+                    'SELECT `' . $column . '` AS media_id, COUNT(*) AS usage_count
+                     FROM `' . $table . '`
+                     WHERE `' . $column . '` IN (' . $placeholders . ')
+                     GROUP BY `' . $column . '`'
+                );
+                $rows->execute($ids);
+
+                foreach ($rows->fetchAll() as $row) {
+                    $mediaId = (int) $row['media_id'];
+                    $count = (int) $row['usage_count'];
+
+                    if ($count > 0 && isset($usage[$mediaId])) {
+                        $usage[$mediaId][] = [
+                            'table' => $table,
+                            'column' => $column,
+                            'count' => $count,
+                        ];
+                    }
+                }
             }
+        } catch (\Throwable) {
+            return $usage;
         }
 
         return $usage;
-        } catch (\Throwable) {
-            return [];
-        }
     }
 
     public function delete(int $id): void
