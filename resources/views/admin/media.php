@@ -50,14 +50,23 @@
         <?php else: ?>
             <div class="admin-media-grid">
                 <?php foreach ($listing['rows'] as $media): ?>
-                    <article class="admin-media-card">
-                        <a href="<?= htmlspecialchars($media['path'], ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener" class="admin-media-card__preview">
-                            <img src="<?= htmlspecialchars($media['path'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($media['alt_text'] ?: $media['filename'], ENT_QUOTES, 'UTF-8') ?>" loading="lazy">
-                        </a>
+                    <article class="admin-media-card<?= empty($media['exists']) ? ' admin-media-card--missing' : '' ?>">
+                        <?php if (!empty($media['exists'])): ?>
+                            <a href="<?= htmlspecialchars($media['path'], ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener" class="admin-media-card__preview">
+                                <img src="<?= htmlspecialchars($media['path'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($media['alt_text'] ?: $media['filename'], ENT_QUOTES, 'UTF-8') ?>" loading="lazy">
+                            </a>
+                        <?php else: ?>
+                            <div class="admin-media-card__preview admin-media-card__preview--missing" role="img" aria-label="Image file is missing">
+                                <span>Image file missing</span>
+                            </div>
+                        <?php endif; ?>
                         <div class="admin-media-card__body">
                             <strong title="<?= htmlspecialchars($media['filename'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($media['filename'], ENT_QUOTES, 'UTF-8') ?></strong>
                             <span><?= htmlspecialchars($media['mime_type'], ENT_QUOTES, 'UTF-8') ?> · <?= number_format(((int) $media['size_bytes']) / 1024, 1) ?> KB</span>
                             <?php if (!empty($media['alt_text'])): ?><small><?= htmlspecialchars($media['alt_text'], ENT_QUOTES, 'UTF-8') ?></small><?php endif; ?>
+                            <?php if (empty($media['exists'])): ?>
+                                <small>File missing from public_html/uploads — replace the reference before deleting this record.</small>
+                            <?php endif; ?>
                             <?php if ((int) ($media['usage_count'] ?? 0) > 0): ?>
                                 <small>In use <?= (int) $media['usage_count'] ?> time(s)</small>
                             <?php else: ?>
