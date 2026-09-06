@@ -498,3 +498,18 @@
     height: 48px;
   }
 }
+
+
+/* Practice-area readability and visible interactive states */
+.practice-detail-hero__back{color:var(--brand-secondary);text-decoration:underline;text-underline-offset:4px}
+.practice-detail-hero__back:hover{color:var(--brand-secondary-hover)}
+.rich-content a{color:var(--brand-primary);text-decoration-color:var(--brand-secondary)}
+.practice-contacts a,.practice-detail__contact-card a{color:var(--brand-primary);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--brand-secondary) 68%,transparent);text-underline-offset:4px}
+.practice-contact__email{color:var(--brand-primary)!important}
+.practice-insights__meta,.practice-insights small{color:var(--brand-secondary)}
+.practice-related a:hover{color:var(--brand-secondary)}
+.practice-detail__contact-card{background:#F1EEE7}
+.practice-detail__contact-card p:not(.section-label){color:var(--text-secondary)}
+.practice-detail__next-step{background:linear-gradient(135deg,#102A43,#0C2233)}
+.rich-content--light,.practice-detail__next-step .rich-content{color:rgba(255,255,255,.84)}
+.practice-detail__next-step .section-label{color:#E6C08C}
