@@ -331,11 +331,21 @@ final class AdminController extends Controller
         $this->validateToken($request);
 
         try {
-            $id = $this->homepage->createSlide($this->slideData($request, $this->homepage->nextSortOrder()));
+            $data = $this->slideData($request, $this->homepage->nextSortOrder());
+            $this->validateSlideMedia($data);
+            $id = $this->homepage->createSlide($data);
+            $saved = $this->homepage->slide($id);
+
+            if ($saved === null || (int) ($saved['media_id'] ?? 0) !== (int) ($data['media_id'] ?? 0)) {
+                throw new InvalidArgumentException('The slide was created, but its selected desktop image was not saved. Please try again.');
+            }
+
             $this->service->audit((int) $user['id'], 'admin.homepage.slide.created', ['id' => $id]);
-            Response::redirect('/admin/homepage?message=slide');
+            Response::redirect('/admin/homepage?message=slide&slide=' . $id . '#slides');
         } catch (InvalidArgumentException $exception) {
-            Response::redirect('/admin/homepage?error=' . rawurlencode($exception->getMessage()));
+            Response::redirect('/admin/homepage?error=' . rawurlencode($exception->getMessage()) . '#slides');
+        } catch (\Throwable $exception) {
+            $this->redirectHomepageFailure($exception, 'create');
         }
     }
 
@@ -346,11 +356,30 @@ final class AdminController extends Controller
         $slideId = $this->id($id);
 
         try {
-            $this->homepage->updateSlide($slideId, $this->slideData($request, 0));
+            $data = $this->slideData($request, 0);
+            $this->validateSlideMedia($data);
+            $this->homepage->updateSlide($slideId, $data);
+
+            $saved = $this->homepage->slide($slideId);
+
+            if ($saved === null) {
+                throw new InvalidArgumentException('The slide could not be found after saving.');
+            }
+
+            if ((int) ($saved['media_id'] ?? 0) !== (int) ($data['media_id'] ?? 0)) {
+                throw new InvalidArgumentException('The selected desktop image was not persisted. No silent success was accepted.');
+            }
+
+            if ((int) ($saved['mobile_media_id'] ?? 0) !== (int) ($data['mobile_media_id'] ?? 0)) {
+                throw new InvalidArgumentException('The selected mobile image was not persisted. No silent success was accepted.');
+            }
+
             $this->service->audit((int) $user['id'], 'admin.homepage.slide.updated', ['id' => $slideId]);
-            Response::redirect('/admin/homepage?message=slide');
+            Response::redirect('/admin/homepage?message=slide&slide=' . $slideId . '#slides');
         } catch (InvalidArgumentException $exception) {
-            Response::redirect('/admin/homepage?error=' . rawurlencode($exception->getMessage()));
+            Response::redirect('/admin/homepage?error=' . rawurlencode($exception->getMessage()) . '&slide=' . $slideId . '#slides');
+        } catch (\Throwable $exception) {
+            $this->redirectHomepageFailure($exception, 'update', $slideId);
         }
     }
 
@@ -454,6 +483,43 @@ final class AdminController extends Controller
             'is_enabled' => $request->input('is_enabled') === '1' ? 1 : 0,
             'sort_order' => max(0, (int) $request->input('sort_order', $defaultSortOrder)),
         ];
+    }
+
+    private function validateSlideMedia(array $data): void
+    {
+        $available = array_flip(array_map(
+            static fn (array $media): int => (int) $media['id'],
+            $this->media->options()
+        ));
+
+        foreach (['media_id' => 'desktop image', 'mobile_media_id' => 'mobile image'] as $field => $label) {
+            $id = $data[$field] ?? null;
+
+            if ($id !== null && !isset($available[(int) $id])) {
+                throw new InvalidArgumentException(
+                    'The selected ' . $label . ' is missing from public_html/uploads or is no longer available. Select a current image and save again.'
+                );
+            }
+        }
+    }
+
+    private function redirectHomepageFailure(\Throwable $exception, string $action, ?int $slideId = null): never
+    {
+        error_log('Homepage slide ' . $action . ' failed: ' . $exception->__toString());
+
+        $message = 'Unable to ' . $action . ' the homepage slide.';
+
+        if (filter_var($_ENV['APP_DEBUG'] ?? getenv('APP_DEBUG') ?: false, FILTER_VALIDATE_BOOL)) {
+            $message .= ' ' . $exception->getMessage();
+        }
+
+        $url = '/admin/homepage?error=' . rawurlencode($message);
+
+        if ($slideId !== null) {
+            $url .= '&slide=' . $slideId;
+        }
+
+        Response::redirect($url . '#slides');
     }
 
     private function nullable(mixed $value): ?string
