@@ -487,6 +487,12 @@ final class AdminController extends Controller
 
     private function validateSlideMedia(array $data): void
     {
+        if (($data['media_id'] ?? null) === null) {
+            throw new InvalidArgumentException(
+                'Every homepage slide needs a desktop image. Slide 3 currently has no desktop media_id, which is why it falls back instead of showing your uploaded image.'
+            );
+        }
+
         $available = array_flip(array_map(
             static fn (array $media): int => (int) $media['id'],
             $this->media->options()
