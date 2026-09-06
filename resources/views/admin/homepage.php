@@ -49,7 +49,14 @@
             <?php foreach ($slides as $slide): ?>
                 <details class="homepage-builder-card">
                     <summary>
-                        <span><strong><?= htmlspecialchars($slide['title'], ENT_QUOTES, 'UTF-8') ?></strong><small><?= (int) $slide['sort_order'] ?></small></span>
+                        <span class="homepage-slide-summary">
+                            <?php if (!empty($slide['image_path'])): ?>
+                                <img src="<?= htmlspecialchars($slide['image_path'], ENT_QUOTES, 'UTF-8') ?>?v=<?= rawurlencode((string) ($slide['updated_at'] ?? $slide['id'])) ?>" alt="" loading="lazy">
+                            <?php else: ?>
+                                <span class="homepage-slide-summary__missing">No image</span>
+                            <?php endif; ?>
+                            <span><strong><?= htmlspecialchars($slide['title'], ENT_QUOTES, 'UTF-8') ?></strong><small>Order <?= (int) $slide['sort_order'] ?> · Media #<?= (int) ($slide['media_id'] ?? 0) ?></small></span>
+                        </span>
                         <span><?= (int) $slide['is_enabled'] === 1 ? 'Live' : 'Hidden' ?></span>
                     </summary>
                     <form class="admin-content-form" method="post" action="/admin/homepage/slides/<?= (int) $slide['id'] ?>">
