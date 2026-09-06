@@ -82,7 +82,7 @@ final class AdminMediaService
         $extension = self::IMAGE_MIMES[$mime];
         $folder = date('Y/m');
         $relativeDirectory = '/uploads/media/' . $folder;
-        $directory = BASE_PATH . '/public' . $relativeDirectory;
+        $directory = BASE_PATH . '/public_html' . $relativeDirectory;
 
         if (!is_dir($directory) && !mkdir($directory, 0775, true) && !is_dir($directory)) {
             throw new InvalidArgumentException('The media storage directory could not be created.');
@@ -133,7 +133,7 @@ final class AdminMediaService
 
         $this->repository->delete($id);
 
-        $path = BASE_PATH . '/public' . (string) $media['path'];
+        $path = BASE_PATH . '/public_html' . (string) $media['path'];
 
         if (is_file($path)) {
             @unlink($path);
