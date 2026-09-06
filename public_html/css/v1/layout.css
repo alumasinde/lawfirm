@@ -2,5 +2,11 @@
 .site-footer__brand{color:#fff}
 .site-footer__brand span{color:var(--brand-secondary)}
 .site-nav__cta{min-width:198px}
+.site-nav .site-nav__cta,
+.site-nav .site-nav__cta:visited,
+.site-nav .site-nav__cta:hover,
+.site-nav .site-nav__cta:focus-visible {
+    color: #ffffff;
+}
 .site-header.is-scrolled .site-nav__cta{min-height:44px}
 @media(max-width:760px){.site-nav__cta{min-width:0}}
