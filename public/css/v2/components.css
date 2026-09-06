@@ -14,3 +14,16 @@
 .form-control:focus{border-color:var(--brand-primary);outline:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--brand-primary) 10%,transparent)}
 .text-link{display:inline-flex;align-items:center;gap:8px;font-size:.88rem;font-weight:750;color:var(--brand-primary)}
 .text-link:hover{color:var(--brand-secondary)}
+
+/* Clearer interactive states and stronger visual contrast */
+.button{font-weight:800}
+.button--primary{background:var(--brand-primary);box-shadow:0 10px 22px rgba(16,42,67,.2)}
+.button--primary:hover{background:var(--brand-primary-hover);box-shadow:0 14px 28px rgba(16,42,67,.24)}
+.button--secondary{background:var(--brand-secondary)}
+.button--secondary:hover{background:var(--brand-secondary-hover)}
+.button--outline{border-color:var(--brand-primary);color:var(--brand-primary);background:#fff}
+.button--outline:hover{background:var(--brand-primary);color:#fff}
+.text-link{color:var(--brand-primary);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--brand-secondary) 72%,transparent);text-underline-offset:4px}
+.text-link:hover{color:var(--brand-secondary);text-decoration-color:currentColor}
+.card{border-color:var(--border-default);box-shadow:0 12px 30px rgba(16,42,67,.06)}
+.card:hover{border-color:color-mix(in srgb,var(--brand-secondary) 58%,var(--border-default));box-shadow:0 18px 38px rgba(16,42,67,.1)}
