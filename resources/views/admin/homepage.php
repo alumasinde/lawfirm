@@ -45,6 +45,13 @@
             <a href="/admin/media">Open Media Library</a>
         </div>
 
+        <?php if (!empty($error)): ?>
+            <div class="admin-alert admin-alert--local" role="alert">
+                <strong>Slide was not saved.</strong>
+                <span><?= htmlspecialchars((string) $error, ENT_QUOTES, 'UTF-8') ?></span>
+            </div>
+        <?php endif; ?>
+
         <div class="homepage-slide-list">
             <?php foreach ($slides as $slide): ?>
                 <details class="homepage-builder-card">
