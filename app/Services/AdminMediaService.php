@@ -26,8 +26,11 @@ final class AdminMediaService
     {
         $result = $this->repository->paginate(max(1, $page), 24, trim($search));
 
+        $usageMap = $this->repository->usageMap(array_column($result['rows'], 'id'));
+
         foreach ($result['rows'] as &$row) {
-            $row['usage'] = $this->repository->usages((int) $row['id']);
+            $row['exists'] = $this->exists((string) ($row['path'] ?? ''));
+            $row['usage'] = $usageMap[(int) $row['id']] ?? [];
             $row['usage_count'] = array_sum(array_column($row['usage'], 'count'));
         }
         unset($row);
@@ -43,7 +46,12 @@ final class AdminMediaService
 
     public function options(): array
     {
-        return $this->repository->options();
+        $options = $this->repository->options();
+
+        return array_values(array_filter(
+            $options,
+            fn (array $media): bool => $this->exists((string) ($media['path'] ?? ''))
+        ));
     }
 
     public function upload(array $file, string $altText = ''): int
@@ -138,6 +146,15 @@ final class AdminMediaService
         if (is_file($path)) {
             @unlink($path);
         }
+    }
+
+    private function exists(string $relativePath): bool
+    {
+        if ($relativePath === '' || !str_starts_with($relativePath, '/uploads/')) {
+            return false;
+        }
+
+        return is_file(BASE_PATH . '/public_html' . $relativePath);
     }
 
     private function cleanFilename(string $name): string
