@@ -56,8 +56,8 @@ final class AdminMediaRepository
     public function insert(array $data): int
     {
         $this->database->statement(
-            'INSERT INTO media (disk, path, filename, mime_type, size_bytes, width, height, alt_text)
-             VALUES (:disk, :path, :filename, :mime_type, :size_bytes, :width, :height, :alt_text)',
+            'INSERT INTO media (disk, path, filename, mime_type, size_bytes, width, height, alt_text, checksum)
+             VALUES (:disk, :path, :filename, :mime_type, :size_bytes, :width, :height, :alt_text, :checksum)',
             $data
         );
 
