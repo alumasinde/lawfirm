@@ -37,3 +37,14 @@
 .practice-row-delete button:hover{border-color:#c98172!important;background:#fff7f5!important;box-shadow:0 6px 16px rgba(139,63,52,.08)}
 .practice-row-delete .practice-row-action__icon{background:#f8e8e4;color:#9a493b}
 @media(max-width:1050px){.admin-row-actions--practice{min-width:500px!important}.practice-row-actions{grid-template-columns:repeat(3,minmax(150px,1fr))!important}}
+
+
+/* Homepage media diagnostics and missing-file states */
+.homepage-slide-summary{display:flex;align-items:center;gap:12px;min-width:0}
+.homepage-slide-summary img,.homepage-slide-summary__missing{width:58px;height:42px;flex:0 0 58px;border:1px solid #ddd5c8;border-radius:7px;object-fit:cover;background:#f4f0e9}
+.homepage-slide-summary__missing{display:grid;place-items:center;padding:5px;color:#8b3f34;font-size:.62rem;font-weight:800;text-align:center}
+.homepage-slide-summary>span:last-child{display:grid;gap:3px;min-width:0}
+.homepage-slide-summary strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-media-card--missing{border-color:#ead9d3!important}
+.admin-media-card__preview--missing{display:grid!important;place-items:center;background:repeating-linear-gradient(-45deg,#fff7f5,#fff7f5 10px,#f9ebe7 10px,#f9ebe7 20px)!important;color:#8b3f34}
+.admin-media-card__preview--missing span{font-size:.78rem;font-weight:800}
