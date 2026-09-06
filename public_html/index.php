@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * PHP's built-in development server can use this file as its router:
  *
- * php -S 0.0.0.0:8000 -t public public/index.php
+ * php -S 0.0.0.0:8000 -t public_html public_html/index.php
  *
  * Existing static files are served directly. Application routes continue
  * through the router below.

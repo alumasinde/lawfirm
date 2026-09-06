@@ -27,7 +27,7 @@ final class StyleLinker
 
         foreach ($this->styles($version) as $style) {
             $href = '/css/' . rawurlencode($version) . '/' . rawurlencode($style);
-            $path = BASE_PATH . '/public/css/' . $version . '/' . $style;
+            $path = BASE_PATH . '/public_html/css/' . $version . '/' . $style;
             $versionToken = is_file($path) ? (string) filemtime($path) : '';
             $output .= '<link rel="stylesheet" href="' . $href
                 . ($versionToken !== '' ? '?v=' . rawurlencode($versionToken) : '')
@@ -52,7 +52,7 @@ final class StyleLinker
     {
         $version = (string) ($this->config['application']['style_version'] ?? 'v1');
 
-        if (!preg_match('/^v[0-9]+$/', $version) || !is_dir(BASE_PATH . '/public/css/' . $version)) {
+        if (!preg_match('/^v[0-9]+$/', $version) || !is_dir(BASE_PATH . '/public_html/css/' . $version)) {
             return 'v1';
         }
 
@@ -92,7 +92,7 @@ final class StyleLinker
 
     private function styles(string $version): array
     {
-        $manifest = BASE_PATH . '/public/css/' . $version . '/manifest.php';
+        $manifest = BASE_PATH . '/public_html/css/' . $version . '/manifest.php';
 
         if (!is_file($manifest)) {
             return [];
