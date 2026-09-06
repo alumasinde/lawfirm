@@ -59,4 +59,24 @@ return static function (\PDO $pdo): void {
     }
 
     foreach($filesToDelete as $file){if(is_file($file))@unlink($file);}
+
+    $referenced=$pdo->query('SELECT path FROM media')->fetchAll(\PDO::FETCH_COLUMN);
+    $referenced=array_fill_keys(array_map(static fn(mixed $path): string=>(string)$path,$referenced),true);
+    $mediaDirectory=$root.'/public_html/uploads/media';
+
+    if(is_dir($mediaDirectory)){
+        $iterator=new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($mediaDirectory,\FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach($iterator as $item){
+            if($item->isDir())continue;
+            $fullPath=$item->getPathname();
+            $relative='/uploads/media'.substr($fullPath,strlen($mediaDirectory));
+
+            if(basename($fullPath)==='.gitkeep'||isset($referenced[$relative]))continue;
+            @unlink($fullPath);
+        }
+    }
 };
