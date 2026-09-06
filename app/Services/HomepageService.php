@@ -23,10 +23,28 @@ final class HomepageService
                 'insights' => $this->repository->section('insights'),
                 'consultation' => $this->repository->section('consultation'),
             ],
-            'slides' => $this->repository->slides(),
+            'slides' => $this->availableSlides(),
             'practiceAreas' => $this->repository->practiceAreas(6),
             'advocates' => $this->repository->advocates(4),
             'articles' => $this->repository->articles(3),
         ];
+    }
+
+    private function availableSlides(): array
+    {
+        $slides = $this->repository->slides();
+
+        foreach ($slides as &$slide) {
+            foreach (['image_path', 'mobile_image_path'] as $field) {
+                $path = (string) ($slide[$field] ?? '');
+
+                if ($path === '' || !is_file(BASE_PATH . '/public_html' . $path)) {
+                    $slide[$field] = null;
+                }
+            }
+        }
+        unset($slide);
+
+        return $slides;
     }
 }
