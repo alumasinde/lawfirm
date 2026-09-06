@@ -150,3 +150,13 @@ button {
     font-size: clamp(1.7rem, 8vw, 2.3rem);
   }
 }
+
+
+/* Public-site readability and contrast refinements */
+body{font-weight:500}
+a{color:var(--text-link)}
+p{color:var(--text-secondary)}
+.section-label{color:var(--brand-secondary);letter-spacing:.14em}
+.section-label--light{color:#E6C08C}
+.lead{color:var(--text-secondary)}
+:focus-visible{outline-color:var(--brand-secondary);outline-width:3px}
