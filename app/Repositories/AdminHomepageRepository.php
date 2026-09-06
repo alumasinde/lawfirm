@@ -60,6 +60,22 @@ final class AdminHomepageRepository
         return (int) $this->database->pdo()->lastInsertId();
     }
 
+    public function slide(int $id): ?array
+    {
+        $row = $this->database->statement(
+            'SELECT s.*, m.path AS image_path, m.filename AS image_filename,
+                    mm.path AS mobile_image_path, mm.filename AS mobile_image_filename
+             FROM homepage_slides s
+             LEFT JOIN media m ON m.id = s.media_id
+             LEFT JOIN media mm ON mm.id = s.mobile_media_id
+             WHERE s.id = :id
+             LIMIT 1',
+            ['id' => $id]
+        )->fetch();
+
+        return $row ?: null;
+    }
+
     public function updateSlide(int $id, array $data): void
     {
         $this->database->statement(
