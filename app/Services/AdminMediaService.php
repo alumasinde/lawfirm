@@ -87,6 +87,18 @@ final class AdminMediaService
             throw new InvalidArgumentException('The uploaded file is not a valid image.');
         }
 
+        $checksum = hash_file('sha256', $tmpName);
+
+        if ($checksum === false) {
+            throw new InvalidArgumentException('The uploaded image could not be fingerprinted.');
+        }
+
+        $existing = $this->repository->findByChecksum($checksum);
+
+        if ($existing !== null && $this->exists((string) ($existing['path'] ?? ''))) {
+            return (int) $existing['id'];
+        }
+
         $extension = self::IMAGE_MIMES[$mime];
         $folder = date('Y/m');
         $relativeDirectory = '/uploads/media/' . $folder;
@@ -113,6 +125,7 @@ final class AdminMediaService
                 'width' => (int) $dimensions[0],
                 'height' => (int) $dimensions[1],
                 'alt_text' => trim($altText) !== '' ? trim($altText) : null,
+                'checksum' => $checksum,
             ]);
         } catch (\Throwable $exception) {
             @unlink($destination);
