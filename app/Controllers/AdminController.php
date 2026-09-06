@@ -19,6 +19,7 @@ use App\Repositories\PracticeAreaDetailRepository;
 use App\Services\AdminContentService;
 use App\Services\AdminMediaService;
 use App\Services\AdminService;
+use App\Support\Cache;
 use InvalidArgumentException;
 
 final class AdminController extends Controller
@@ -159,6 +160,7 @@ final class AdminController extends Controller
                 'resource' => $resourceKey,
                 'id' => $id,
             ]);
+            $this->clearPublicCache();
             Response::redirect('/admin/content/' . rawurlencode($resourceKey) . '?message=created');
         } catch (InvalidArgumentException $exception) {
             Response::redirect('/admin/content/' . rawurlencode($resourceKey) . '/create?error=' . rawurlencode($exception->getMessage()));
@@ -205,6 +207,7 @@ final class AdminController extends Controller
                 'resource' => $resourceKey,
                 'id' => $recordId,
             ]);
+            $this->clearPublicCache();
             Response::redirect(
                 '/admin/content/' . rawurlencode($resourceKey) . '/' . $recordId . '/edit?message=updated'
             );
@@ -225,6 +228,7 @@ final class AdminController extends Controller
             'resource' => $resourceKey,
             'id' => $recordId,
         ]);
+            $this->clearPublicCache();
 
         Response::redirect('/admin/content/' . rawurlencode($resourceKey) . '?message=deleted');
     }
@@ -278,6 +282,7 @@ final class AdminController extends Controller
                 'related' => $request->input('related', []),
             ]);
             $this->service->audit((int) $user['id'], 'admin.practice_area.details.updated', ['id' => $areaId]);
+            $this->clearPublicCache();
             Response::redirect('/admin/practice-areas/' . $areaId . '/details?message=updated');
         } catch (InvalidArgumentException $exception) {
             Response::redirect('/admin/practice-areas/' . $areaId . '/details?error=' . rawurlencode($exception->getMessage()));
@@ -319,6 +324,7 @@ final class AdminController extends Controller
                 'is_enabled' => $request->input('is_enabled') === '1' ? 1 : 0,
             ]);
             $this->service->audit((int) $user['id'], 'admin.homepage.section.updated', ['id' => $sectionId]);
+            $this->clearPublicCache();
             Response::redirect('/admin/homepage?message=section');
         } catch (InvalidArgumentException $exception) {
             Response::redirect('/admin/homepage?error=' . rawurlencode($exception->getMessage()));
@@ -341,6 +347,7 @@ final class AdminController extends Controller
             }
 
             $this->service->audit((int) $user['id'], 'admin.homepage.slide.created', ['id' => $id]);
+            $this->clearPublicCache();
             Response::redirect('/admin/homepage?message=slide&slide=' . $id . '#slides');
         } catch (InvalidArgumentException $exception) {
             Response::redirect('/admin/homepage?error=' . rawurlencode($exception->getMessage()) . '#slides');
@@ -375,6 +382,7 @@ final class AdminController extends Controller
             }
 
             $this->service->audit((int) $user['id'], 'admin.homepage.slide.updated', ['id' => $slideId]);
+            $this->clearPublicCache();
             Response::redirect('/admin/homepage?message=slide&slide=' . $slideId . '#slides');
         } catch (InvalidArgumentException $exception) {
             Response::redirect('/admin/homepage?error=' . rawurlencode($exception->getMessage()) . '&slide=' . $slideId . '#slides');
@@ -390,6 +398,7 @@ final class AdminController extends Controller
         $slideId = $this->id($id);
         $this->homepage->deleteSlide($slideId);
         $this->service->audit((int) $user['id'], 'admin.homepage.slide.deleted', ['id' => $slideId]);
+            $this->clearPublicCache();
         Response::redirect('/admin/homepage?message=slide');
     }
 
@@ -424,6 +433,7 @@ final class AdminController extends Controller
 
             $id = $this->media->upload($file, (string) $request->input('alt_text'));
             $this->service->audit((int) $user['id'], 'admin.media.uploaded', ['id' => $id]);
+            $this->clearPublicCache();
             Response::redirect('/admin/media?message=uploaded');
         } catch (InvalidArgumentException $exception) {
             Response::redirect('/admin/media?error=' . rawurlencode($exception->getMessage()));
@@ -439,6 +449,7 @@ final class AdminController extends Controller
         try {
             $this->media->delete($mediaId);
             $this->service->audit((int) $user['id'], 'admin.media.deleted', ['id' => $mediaId]);
+            $this->clearPublicCache();
             Response::redirect('/admin/media?message=deleted');
         } catch (InvalidArgumentException $exception) {
             Response::redirect('/admin/media?error=' . rawurlencode($exception->getMessage()));
@@ -454,6 +465,11 @@ final class AdminController extends Controller
         $this->service->auditLogout($user['id'] ?? null);
         Auth::logout($this->sessionConfig);
         Response::redirect('/admin/login');
+    }
+
+    private function clearPublicCache(): void
+    {
+        Cache::forgetPrefix('public:');
     }
 
     private function slideData(Request $request, int $defaultSortOrder): array

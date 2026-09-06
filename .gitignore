@@ -9,5 +9,5 @@
 .DS_Store
 Thumbs.db
 
-/public/uploads/media/*
-!/public/uploads/media/.gitkeep
+/public_html/uploads/media/*
+!/public_html/uploads/media/.gitkeep

@@ -1,16 +1,14 @@
 <?php
-
 declare(strict_types=1);
-
 namespace App\Services;
-
 use App\Repositories\SiteRepository;
+use App\Support\Cache;
 
 final class SiteService
 {
-    public function __construct(private readonly SiteRepository $repository)
-    {
-    }
+    private const CACHE_TTL = 600;
+
+    public function __construct(private readonly SiteRepository $repository) {}
 
     public function content(array $keys): array
     {
@@ -19,18 +17,15 @@ final class SiteService
 
     public function layoutData(): array
     {
-        return [
-            'siteContent' => $this->content([
-                'site_identity',
-                'top_bar',
-                'footer_explore',
-                'footer_connect',
-            ]),
-            'navigation' => [
-                'main' => $this->repository->navigation('main'),
-                'footer_explore' => $this->repository->navigation('footer_explore'),
-                'footer_connect' => $this->repository->navigation('footer_connect'),
-            ],
-        ];
+        return Cache::remember('public:site-layout:v2', self::CACHE_TTL, function (): array {
+            return [
+                'siteContent' => $this->content(['site_identity', 'top_bar', 'footer_explore', 'footer_connect']),
+                'navigation' => [
+                    'main' => $this->repository->navigation('main'),
+                    'footer_explore' => $this->repository->navigation('footer_explore'),
+                    'footer_connect' => $this->repository->navigation('footer_connect'),
+                ],
+            ];
+        });
     }
 }
