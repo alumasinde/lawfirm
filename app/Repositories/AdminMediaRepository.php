@@ -43,6 +43,16 @@ final class AdminMediaRepository
         )->fetchAll();
     }
 
+    public function findByChecksum(string $checksum): ?array
+    {
+        $row = $this->database->statement(
+            'SELECT * FROM media WHERE checksum = :checksum ORDER BY id ASC LIMIT 1',
+            ['checksum' => $checksum]
+        )->fetch();
+
+        return $row ?: null;
+    }
+
     public function insert(array $data): int
     {
         $this->database->statement(
