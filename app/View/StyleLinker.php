@@ -27,7 +27,11 @@ final class StyleLinker
 
         foreach ($this->styles($version) as $style) {
             $href = '/css/' . rawurlencode($version) . '/' . rawurlencode($style);
-            $output .= '<link rel="stylesheet" href="' . $href . '">';
+            $path = BASE_PATH . '/public/css/' . $version . '/' . $style;
+            $versionToken = is_file($path) ? (string) filemtime($path) : '';
+            $output .= '<link rel="stylesheet" href="' . $href
+                . ($versionToken !== '' ? '?v=' . rawurlencode($versionToken) : '')
+                . '">';
         }
 
         return $output;
