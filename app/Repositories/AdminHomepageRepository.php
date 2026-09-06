@@ -22,7 +22,11 @@ final class AdminHomepageRepository
     public function slides(): array
     {
         return $this->database->statement(
-            'SELECT s.*, m.path AS image_path, mm.path AS mobile_image_path
+            'SELECT s.*,
+                    m.path AS image_path,
+                    m.filename AS image_filename,
+                    mm.path AS mobile_image_path,
+                    mm.filename AS mobile_image_filename
              FROM homepage_slides s
              LEFT JOIN media m ON m.id = s.media_id
              LEFT JOIN media mm ON mm.id = s.mobile_media_id
