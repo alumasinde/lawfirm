@@ -45,7 +45,7 @@ $firmDescription = $identity['body'] ?? '';
                     <a class="<?= $active ? 'is-active' : '' ?>" href="<?= htmlspecialchars($href, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($item['label'], ENT_QUOTES, 'UTF-8') ?></a>
                 <?php endforeach; ?>
                 <?php if (!empty($topBar['primary_label']) && !empty($topBar['primary_url'])): ?>
-                    <a class="button button--primary site-nav__cta" href="<?= htmlspecialchars($topBar['primary_url'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($topBar['primary_label'], ENT_QUOTES, 'UTF-8') ?> <span aria-hidden="true">→</span></a>
+                    <a class="button button--primary site-nav__cta" href="<?= htmlspecialchars($topBar['primary_url'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($topBar['primary_label'], ENT_QUOTES, 'UTF-8') ?></a>
                 <?php endif; ?>
             </nav>
         </div>
